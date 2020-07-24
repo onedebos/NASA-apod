@@ -7,10 +7,11 @@ import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import photoSliceReducer from "./features/photo/PhotoSlice";
 
+require("typeface-nunito");
+
 const store = configureStore({
   reducer: {
     photo: photoSliceReducer,
-    // obj: ojSlice.reducer
   },
 });
 

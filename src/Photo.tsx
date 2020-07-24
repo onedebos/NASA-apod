@@ -1,44 +1,33 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   photoSelector,
   getTodaysPhoto,
   getOtherDaysPhoto,
-  setErrors,
   setSelectedDate,
+  saveToStorage,
+  getFavorites,
 } from "./features/photo/PhotoSlice";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
+import { Snackbar } from "@material-ui/core";
+import Favorites from "./Favorites";
 
 const Photo: React.FC = () => {
-  const { photo, loading, errors, selectedDate } = useSelector(photoSelector);
+  const { photo, loading, errors, selectedDate, favorites } = useSelector(
+    photoSelector
+  );
+  const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
   const dispatch = useDispatch();
-  const ref = useRef<number>(0);
   const dateRef = useRef<any>(moment(selectedDate));
-
-  // const updateCnt = (
-  //   shouldAdd: boolean,
-  //   shouldSubtract: boolean,
-  //   newCnt: number
-  // ) => {
-  //   if (shouldAdd) {
-  //     ref.current = ref.current + newCnt;
-  //   }
-  //   if (shouldSubtract) {
-  //     ref.current = ref.current - newCnt;
-  //     if (ref.current < 0) {
-  //       ref.current = 0;
-  //     }
-  //   }
-
-  //   if (!shouldAdd && !shouldSubtract) {
-  //     ref.current = newCnt;
-  //   }
-  // };
 
   const handleClose = () => {
     const dateSelected = new Date(selectedDate);
+    if (selectedDate === dateRef.current) {
+      return;
+    }
     const dateArray = dateSelected.toLocaleDateString().split("/");
     const buildDateStr = `${dateArray[2]}-${dateArray[1]}-${dateArray[0]}`;
     dispatch(getOtherDaysPhoto(buildDateStr));
@@ -55,18 +44,12 @@ const Photo: React.FC = () => {
   const handlePrevDate = () => {
     let currDate: any = dateRef.current;
     currDate = moment(currDate);
-    // if (ref.current < 0) {
-    //   updateCnt(false, false, 0);
-    // }
-    // if (ref.current === 0) {
-    //   updateCnt(true, false, 1);
-    // }
     currDate = currDate.subtract(1, "days");
     currDate = currDate.format("YYYY-MM-DD");
     const dateArray = currDate.split("-");
     const buildDateStr = `${dateArray[0]}-${dateArray[1]}-${dateArray[2]}`;
     dispatch(getOtherDaysPhoto(buildDateStr));
-    // updateCnt(true, false, 1);
+
     dateRef.current = currDate;
     console.log("In Prev", currDate);
   };
@@ -74,27 +57,34 @@ const Photo: React.FC = () => {
   const handleNextDate = () => {
     let currDate: any = dateRef.current;
     let momentFormatted = moment(dateRef.current);
-    // updateCnt(false, true, 1);
 
     currDate = momentFormatted.add(1, "days").format("YYYY-MM-DD");
     if (moment(currDate).isAfter(moment())) {
-      return setErrors("No Picture of the day available");
+      setMessage("No new pictures to show!");
+      setOpenSnackBar(true);
+      setTimeout(() => setOpenSnackBar(false), 2000);
+      return;
     }
     dateRef.current = currDate;
     console.log("In Next", currDate);
-
-    // if (ref.current < 0) {
-    //   updateCnt(false, false, 0);
-    //   return setErrors("No Picture of the day available");
-    // }
 
     const dateArray = currDate.split("-");
     const buildDateStr = `${dateArray[0]}-${dateArray[1]}-${dateArray[2]}`;
     dispatch(getOtherDaysPhoto(buildDateStr));
   };
 
+  const handleSaveFavoritesToStorage = () => {
+    // TODO if favorites increase show saved to favorites
+    // else show already saved
+    setMessage("Saved to Favorites!");
+    setOpenSnackBar(true);
+    setTimeout(() => setOpenSnackBar(false), 2000);
+    dispatch(saveToStorage(photo));
+  };
+
   useEffect(() => {
     dispatch(getTodaysPhoto());
+    dispatch(getFavorites());
     return () => {};
   }, [dispatch]);
 
@@ -102,7 +92,7 @@ const Photo: React.FC = () => {
     <div>
       <div className="grid grid-cols-4">
         <button
-          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-blue-500 hover:bg-blue-800 text-white font-semibold transform rounded-md"
+          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-400 hover:bg-orange-800 text-white font-semibold transform rounded-md"
           onClick={handlePrevDate}
         >
           Prev
@@ -112,23 +102,39 @@ const Photo: React.FC = () => {
             "loading......"
           ) : (
             <div>
-              <h1 className="font-bold text-2xl text-center mb-2">
-                {photo.title}
-              </h1>
               {errors ? (
                 <h1 className="bg-red-500 font-bold text-2xl">{errors}</h1>
               ) : (
                 <img
                   src={photo.url}
                   alt={photo.explanation}
-                  style={{ maxHeight: "100vh", minHeight: "50vh" }}
+                  style={{
+                    maxHeight: "50vh",
+                    minHeight: "50vh",
+                    margin: "1.5em auto",
+                  }}
                 />
               )}
             </div>
           )}
           <div className="flex justify-between mt-1">
-            <button className="bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out">
-              Set Favorite
+            <button
+              className="bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-1/3 save-to-storage"
+              onClick={handleSaveFavoritesToStorage}
+            >
+              Favorite
+              <span>
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Love_Heart_symbol.svg"
+                  alt="favorite"
+                  className="ml-3"
+                  style={{
+                    height: "20px",
+                    width: "20px",
+                    display: "inline-block",
+                  }}
+                />
+              </span>
             </button>
             <DatePicker
               dateFormat="yyyy/MM/dd"
@@ -138,20 +144,37 @@ const Photo: React.FC = () => {
                 dispatch(setSelectedDate(date.toISOString()))
               }
               onCalendarClose={handleClose}
-              className="text-right p-3 rounded-sm font-semibold"
+              className="text-right p-3 rounded-sm font-semibold border border-orange-800"
             />
           </div>
-          <div className="mt-3 ">
+          <div className="mt-3 py-5">
+            <h1 className="font-bold text-3xl">{photo.title}</h1>
+            <div className="flex justify-start bg-gray-200 p-2 mb-2">
+              <div>
+                <h3 className="font-bold rounded-sm">
+                  Photo by:{" "}
+                  <span className="font-semibold ">{photo.copyright}</span>
+                </h3>
+              </div>
+              <div>
+                <h3 className="font-bold rounded-sm ml-4">
+                  Picture for:{" "}
+                  <span className="font-semibold ">{photo.date}</span>
+                </h3>
+              </div>
+            </div>
             <p>{photo.explanation}</p>
           </div>
         </div>
         <button
-          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-blue-500 hover:bg-blue-800 text-white font-semibold transform rounded-md"
+          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-400 hover:bg-orange-800 text-white font-semibold transform rounded-md"
           onClick={handleNextDate}
         >
           Next
         </button>
       </div>
+      <Snackbar open={openSnackBar} autoHideDuration={1000} message={message} />
+      <Favorites favoritePhotos={favorites} />
     </div>
   );
 };

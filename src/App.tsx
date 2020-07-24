@@ -1,11 +1,16 @@
 import React from "react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Photo from "./Photo";
+import Footer from "./Footer";
 
 const App: React.FC = () => {
   return (
-    <div>
-      <Photo />
-    </div>
+    <BrowserRouter>
+      <Switch>
+        <Route exact path="/" component={Photo} />
+      </Switch>
+      <Footer />
+    </BrowserRouter>
   );
 };
 

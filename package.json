@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
     "@reduxjs/toolkit": "^1.4.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -29,7 +30,7 @@
     "start": "npm run build:css && react-scripts start",
     "build:css": "postcss src/styles/tailwind.css -o src/styles/index.css",
     "build": "npm run build:css && react-scripts build",
-    "test": "react-scripts test",
+    "test": "cypress run -- --spec cypress/integration/unit/local_storage.spec.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -49,6 +50,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^9.8.5",
+    "cypress": "^4.11.0",
     "postcss-cli": "^7.1.1",
     "tailwindcss": "^1.5.1"
   }
