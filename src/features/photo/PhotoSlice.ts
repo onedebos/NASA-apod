@@ -89,8 +89,8 @@ export const getPhoto = (date: undefined | string = undefined) => {
       }
     } catch (error) {
       console.log(error.response);
-
       // dispatch(setErrors(error));
+      dispatch(setLoading(false));
     }
   };
 };
