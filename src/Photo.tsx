@@ -17,36 +17,32 @@ const Photo: React.FC = () => {
   const ref = useRef<number>(0);
   const dateRef = useRef<any>(moment(selectedDate));
 
-  const updateCnt = (
-    shouldAdd: boolean,
-    shouldSubtract: boolean,
-    newCnt: number
-  ) => {
-    if (shouldAdd) {
-      ref.current = ref.current + newCnt;
+  // const updateCnt = (
+  //   shouldAdd: boolean,
+  //   shouldSubtract: boolean,
+  //   newCnt: number
+  // ) => {
+  //   if (shouldAdd) {
+  //     ref.current = ref.current + newCnt;
+  //   }
+  //   if (shouldSubtract) {
+  //     ref.current = ref.current - newCnt;
+  //     if (ref.current < 0) {
+  //       ref.current = 0;
+  //     }
+  //   }
 
-      console.log("AddCurr", ref.current);
-    }
-    if (shouldSubtract) {
-      ref.current = ref.current - newCnt;
-      if (ref.current < 0) {
-        ref.current = 0;
-      }
-      console.log("SubtractCurr", ref.current);
-    }
-
-    if (!shouldAdd && !shouldSubtract) {
-      ref.current = newCnt;
-      console.log(ref.current);
-    }
-  };
+  //   if (!shouldAdd && !shouldSubtract) {
+  //     ref.current = newCnt;
+  //   }
+  // };
 
   const handleClose = () => {
     const dateSelected = new Date(selectedDate);
-    console.log(dateSelected);
     const dateArray = dateSelected.toLocaleDateString().split("/");
     const buildDateStr = `${dateArray[2]}-${dateArray[1]}-${dateArray[0]}`;
     dispatch(getOtherDaysPhoto(buildDateStr));
+    dateRef.current = selectedDate;
     console.log(buildDateStr);
   };
 
@@ -57,21 +53,20 @@ const Photo: React.FC = () => {
   };
 
   const handlePrevDate = () => {
-    console.log("First prev cnt", ref.current);
-    let currDate: any = dateRef;
+    let currDate: any = dateRef.current;
     currDate = moment(currDate);
-    if (ref.current < 0) {
-      updateCnt(false, false, 0);
-    }
-    if (ref.current === 0) {
-      updateCnt(true, false, 1);
-    }
-    currDate = currDate.subtract(ref.current, "days");
+    // if (ref.current < 0) {
+    //   updateCnt(false, false, 0);
+    // }
+    // if (ref.current === 0) {
+    //   updateCnt(true, false, 1);
+    // }
+    currDate = currDate.subtract(1, "days");
     currDate = currDate.format("YYYY-MM-DD");
     const dateArray = currDate.split("-");
     const buildDateStr = `${dateArray[0]}-${dateArray[1]}-${dateArray[2]}`;
     dispatch(getOtherDaysPhoto(buildDateStr));
-    updateCnt(true, false, 1);
+    // updateCnt(true, false, 1);
     dateRef.current = currDate;
     console.log("In Prev", currDate);
   };
@@ -79,7 +74,7 @@ const Photo: React.FC = () => {
   const handleNextDate = () => {
     let currDate: any = dateRef.current;
     let momentFormatted = moment(dateRef.current);
-    updateCnt(false, true, 1);
+    // updateCnt(false, true, 1);
 
     currDate = momentFormatted.add(1, "days").format("YYYY-MM-DD");
     if (moment(currDate).isAfter(moment())) {
@@ -88,10 +83,10 @@ const Photo: React.FC = () => {
     dateRef.current = currDate;
     console.log("In Next", currDate);
 
-    if (ref.current < 0) {
-      updateCnt(false, false, 0);
-      return setErrors("No Picture of the day available");
-    }
+    // if (ref.current < 0) {
+    //   updateCnt(false, false, 0);
+    //   return setErrors("No Picture of the day available");
+    // }
 
     const dateArray = currDate.split("-");
     const buildDateStr = `${dateArray[0]}-${dateArray[1]}-${dateArray[2]}`;
@@ -121,7 +116,7 @@ const Photo: React.FC = () => {
                 {photo.title}
               </h1>
               {errors ? (
-                errors
+                <h1 className="bg-red-500 font-bold text-2xl">{errors}</h1>
               ) : (
                 <img
                   src={photo.url}

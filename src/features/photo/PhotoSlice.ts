@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // TODO use env for API keys
-const apiKey: string = "DE8fsud7knGnE2BZLsKkookQDDZlaIz9YXY6wwpO";
+const apiKey: string | undefined = process.env.REACT_APP_API_KEY;
 const baseURL: string = "https://api.nasa.gov/planetary/apod";
 
 const buildFullUrl = (startDate: string) => {
