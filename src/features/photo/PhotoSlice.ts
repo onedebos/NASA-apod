@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+
+// TODO use env for API keys
 const apiKey: string = "DE8fsud7knGnE2BZLsKkookQDDZlaIz9YXY6wwpO";
 const baseURL: string = "https://api.nasa.gov/planetary/apod";
 
@@ -13,6 +15,7 @@ type initState = {
   errors: string;
   description: string;
   additionalMsg: string;
+  selectedDate: any;
 };
 
 export const initialState: initState = {
@@ -21,6 +24,7 @@ export const initialState: initState = {
   errors: "",
   description: "",
   additionalMsg: "",
+  selectedDate: new Date().toISOString(),
 };
 
 const photoSlice = createSlice({
@@ -42,6 +46,24 @@ const photoSlice = createSlice({
     setAdditionalMsg: (state: initState, { payload }) => {
       state.additionalMsg = payload;
     },
+    setSelectedDate: (state: initState, { payload }) => {
+      state.selectedDate = payload;
+    },
+    savePOTDToLocalStorage: (state: initState, { payload }) => {
+      let POTDInStorage = localStorage.getItem("POTD");
+      let data: any = [];
+
+      if (POTDInStorage) {
+        // POTDInStorage += "," + JSON.stringify(payload);
+        data.push(POTDInStorage);
+        localStorage.setItem("data", data);
+        // localStorage.setItem("POTD", POTDInStorage);
+      } else {
+        data.push(POTDInStorage);
+        localStorage.setItem("data", data);
+        // localStorage.setItem("POTD", payload);
+      }
+    },
   },
 });
 export const {
@@ -49,7 +71,9 @@ export const {
   setLoading,
   setErrors,
   setDescription,
+  setSelectedDate,
   setAdditionalMsg,
+  savePOTDToLocalStorage,
 } = photoSlice.actions;
 
 export default photoSlice.reducer;
@@ -57,39 +81,47 @@ export default photoSlice.reducer;
 export const photoSelector = (state: { photo: any }) => state.photo;
 
 // GET TODAY's PHOTO
-export const getPhoto = (date: undefined | string = undefined) => {
+export const getTodaysPhoto = () => {
   return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
-    dispatch(setLoading(true));
     try {
-      let dateToFind: string | undefined = date;
-      if (!dateToFind) {
-        let todaysDate: any = new Date().toLocaleDateString().split("/");
-        const yesterdaysDay: string = (new Date().getDate() - 1).toString();
-        let dateString = `${todaysDate[2]}-${todaysDate[1]}-${todaysDate[0]}`;
-        const res = await axios.get(buildFullUrl(dateString));
+      dispatch(setLoading(true));
+      dispatch(setErrors(""));
 
-        // if a picture has not been released for the day
-        if (res.data.length < 1) {
-          todaysDate[0] = yesterdaysDay;
-          dateString = `${todaysDate[2]}-${todaysDate[1]}-${todaysDate[0]}`;
-          const res = await axios.get(buildFullUrl(dateString));
-          dispatch(setLoading(false));
-          console.log(res.data);
-          dispatch(setPhoto(res.data[0]));
-          dispatch(
-            setAdditionalMsg(
-              "Showing Picture from yesterday as today's picture is not available at the moment"
-            )
-          );
-        }
-      } else {
-        const res = await axios.get(buildFullUrl(dateToFind));
-        dispatch(setLoading(false));
-        console.log(res.data);
+      let todaysDate: any = new Date().toLocaleDateString().split("/");
+      let dateString = `${todaysDate[2]}-${todaysDate[1]}-${todaysDate[0]}`;
+      const res = await axios.get(buildFullUrl(dateString));
+      dispatch(setPhoto(res.data[0]));
+      dispatch(savePOTDToLocalStorage(res.data[0]));
+      dispatch(setLoading(false));
+
+      // if a picture has not been released for the day
+      if (res.data.length < 1) {
+        throw new Error("No picture of the day available.");
       }
     } catch (error) {
-      console.log(error.response);
-      // dispatch(setErrors(error));
+      console.log(error);
+      dispatch(setErrors("No picture of the day available."));
+      dispatch(setLoading(false));
+    }
+  };
+};
+
+// GET Photo from other days
+export const getOtherDaysPhoto = (dateToFind: string) => {
+  return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+    dispatch(setLoading(true));
+    dispatch(setErrors(""));
+    try {
+      const res = await axios.get(buildFullUrl(dateToFind));
+      if (res.data.length < 1) {
+        throw new Error("No picture of the day available.");
+      }
+      dispatch(setPhoto(res.data[0]));
+      dispatch(savePOTDToLocalStorage(res.data[0]));
+      dispatch(setLoading(false));
+    } catch (error) {
+      console.log(error);
+      dispatch(setErrors("No picture of the day available."));
       dispatch(setLoading(false));
     }
   };

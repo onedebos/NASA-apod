@@ -3,7 +3,7 @@ import Photo from "./Photo";
 
 const App: React.FC = () => {
   return (
-    <div className="flex justify-center items-center m-auto bg-red-300 min-h-screen">
+    <div>
       <Photo />
     </div>
   );
