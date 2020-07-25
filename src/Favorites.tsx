@@ -92,10 +92,10 @@ const Favorites: React.FC<FavProps> = ({ favoritePhotos }) => {
               />
 
               <div className="flex justify-start mt-2 pr-3 md:pr-0">
-                <div className="bg-gray-500 p-2 text-white rounded-md font-bold hover:bg-gray-700 w-full">
+                <div className="bg-gray-500 p-2 text-white rounded-md hover:bg-gray-700 w-full text-center">
                   <ScrollIntoView selector="#see-more">
                     <button
-                      className="focus:outline-none"
+                      className="focus:outline-none font-bold"
                       onClick={() => {
                         dispatch(seeMoreAboutFavPhoto(photo));
                       }}
