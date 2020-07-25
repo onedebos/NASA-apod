@@ -33,6 +33,7 @@
     "build:css": "postcss src/styles/tailwind.css -o src/styles/index.css",
     "build": "npm run build:css && react-scripts build",
     "test": "cypress run -- --spec cypress/integration/unit/local_storage.spec.js",
+    "test:open": "cypress open -- --spec cypress/integration/unit/local_storage.spec.js",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

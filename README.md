@@ -44,7 +44,12 @@ npm start
 - `npm start`
 - `npm test`
 
-  This command will run the tests in the terminal.
+```js
+// to watch tests running in browser
+npm test:open
+```
+
+This command will run the tests in the terminal.
 
 ## Authors
 
