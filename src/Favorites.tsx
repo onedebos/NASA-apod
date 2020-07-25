@@ -76,10 +76,10 @@ const Favorites: React.FC<FavProps> = ({ favoritePhotos }) => {
         Delete all <DeleteRoundedIcon style={{ color: "white" }} />
       </button>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 mt-3 lg:max-w-3xl">
+      <div className="md:grid grid-cols-2 lg:grid-cols-3 gap-6 mt-3 lg:max-w-3xl">
         {favoritePhotos.map((photo: PhotoType, index: number) => {
           return (
-            <div className="col-span-1" key={index}>
+            <div className="col-span-1 mt-5 md:mt-0" key={index}>
               <img
                 src={photo.url}
                 alt={photo.explanation}
@@ -90,7 +90,7 @@ const Favorites: React.FC<FavProps> = ({ favoritePhotos }) => {
                 }}
               />
 
-              <div className="flex justify-start mt-2">
+              <div className="flex justify-start mt-2 pr-3 md:pr-0">
                 <button
                   className="bg-gray-500 p-2 text-white rounded-md font-bold hover:bg-gray-700 w-full focus:outline-none"
                   onClick={() => dispatch(seeMoreAboutFavPhoto(photo))}

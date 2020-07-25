@@ -110,9 +110,9 @@ const Photo: React.FC = () => {
 
   return (
     <div>
-      <div className="grid grid-cols-4">
+      <div className="px-8 md:p-0 md:grid grid-cols-4">
         <button
-          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-blue-400 hover:bg-blue-800 text-white font-semibold transform rounded-md focus:outline-none md:w-1/2 lg:w-1/2"
+          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-blue-400 hover:bg-blue-800 text-white font-semibold transform rounded-md focus:outline-none md:w-1/2 lg:w-1/2 hidden md:block"
           onClick={handlePrevDate}
         >
           Previous Day
@@ -130,9 +130,21 @@ const Photo: React.FC = () => {
             />
           </div>
 
-          <div className="flex justify-between mt-1">
+          <div className="flex md:justify-between flex-col md:flex-row mt-1">
             <button
-              className="bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-1/3 save-to-storage focus:outline-none"
+              className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-blue-400 hover:bg-blue-800 text-white font-semibold transform rounded-sm focus:outline-none w-full md:hidden mt-6"
+              onClick={handlePrevDate}
+            >
+              Previous Day
+            </button>
+            <button
+              className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-blue-400 hover:bg-blue-800 text-white font-semibold transform rounded-sm focus:outline-none w-full md:hidden mt-1"
+              onClick={handleNextDate}
+            >
+              Next Day
+            </button>
+            <button
+              className="bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-full md:w-1/3 save-to-storage focus:outline-none mt-1 md:mt-0"
               onClick={handleSaveFavoritesToStorage}
               type="button"
               disabled={errors ? true : false}
@@ -159,13 +171,13 @@ const Photo: React.FC = () => {
                 dispatch(setSelectedDate(date.toISOString()))
               }
               onCalendarClose={handleClose}
-              className="text-right p-3 rounded-sm font-semibold border border-orange-800"
+              className="text-right p-3 mt-2 md:mt-0 rounded-sm font-semibold border border-orange-800"
             />
           </div>
           <div className="mt-3 py-5">
             <div>
               <h1 className="font-bold text-3xl">{photo.title}</h1>
-              <div className="flex justify-start bg-gray-200 p-2 mb-2">
+              <div className="flex justify-start bg-gray-200 p-2 mb-2 text-lg md flex-col w-full lg:w-1/2">
                 <div>
                   <h3 className="font-bold rounded-sm">
                     Photo by:{" "}
@@ -173,7 +185,7 @@ const Photo: React.FC = () => {
                   </h3>
                 </div>
                 <div>
-                  <h3 className="font-bold rounded-sm ml-4">
+                  <h3 className="font-bold rounded-sm">
                     Picture for:{" "}
                     <span className="font-semibold ">{photo.date}</span>
                   </h3>
@@ -184,7 +196,7 @@ const Photo: React.FC = () => {
           </div>
         </div>
         <button
-          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-blue-500 hover:bg-blue-800 text-white font-semibold transform rounded-md focus:outline-none md:w-1/2 lg:w-1/2"
+          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-blue-500 hover:bg-blue-800 text-white font-semibold transform rounded-md focus:outline-none md:w-1/2 lg:w-1/2 hidden md:block"
           onClick={handleNextDate}
         >
           Next Day

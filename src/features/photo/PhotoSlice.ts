@@ -143,8 +143,13 @@ export const getTodaysPhoto = () => {
     } catch (error) {
       if (error.message === "Request failed with status code 504") {
         return dispatch(
-          setErrors("Looks like our servers are down. Please try again later.")
+          setErrors(
+            "Looks like NASA's servers are down. Please try again later."
+          )
         );
+      }
+      if (error.message === "Request failed with status code 400") {
+        return dispatch(setErrors("It's a problem from us. Please try again."));
       }
       dispatch(setErrors(error.message));
       dispatch(setLoading(false));
@@ -214,7 +219,7 @@ export const getPreviews = (dateToFind: string, dayToPreview: string) => {
 export const saveToStorage = (photo: object) => {
   return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
     try {
-      await sendToFireStore(photo);
+      // await sendToFireStore(photo);  // IF ENABLED, SENDS FAVORITE TO FIRESTORE
       dispatch(savePOTDToLocalStorage(photo));
     } catch (error) {
       dispatch(setErrors("There was an issue saving to the DB."));
