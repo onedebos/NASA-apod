@@ -104,7 +104,7 @@ const Photo: React.FC = () => {
     return () => {};
   }, [dispatch]);
 
-  if (loading) {
+  if (loading || errors) {
     return <Loading />;
   }
 
@@ -119,28 +119,20 @@ const Photo: React.FC = () => {
         </button>
         <div className="flex flex-col justify-center m-auto min-w-full min-h-screen col-span-2">
           <div style={{ maxHeight: "50vh" }}>
-            {errors ? (
-              <h1 className="bg-red-500 rounded-md font-bold text-2xl text-white p-3">
-                {errors}
-              </h1>
-            ) : (
-              <img
-                src={photo.url}
-                alt={photo.explanation}
-                style={{
-                  maxHeight: "50vh",
-                  minHeight: "50vh",
-                  margin: "1.5em auto",
-                }}
-              />
-            )}
+            <img
+              src={photo.url}
+              alt={photo.explanation}
+              style={{
+                maxHeight: "50vh",
+                minHeight: "50vh",
+                margin: "1.5em auto",
+              }}
+            />
           </div>
 
           <div className="flex justify-between mt-1">
             <button
-              className={`bg-gray-300 p-3 rounded-sm font-semibold ${
-                errors ? "" : "hover:bg-green-200"
-              }  transition ease-in-out w-1/3 save-to-storage focus:outline-none`}
+              className="bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-1/3 save-to-storage focus:outline-none"
               onClick={handleSaveFavoritesToStorage}
               type="button"
               disabled={errors ? true : false}
@@ -171,28 +163,24 @@ const Photo: React.FC = () => {
             />
           </div>
           <div className="mt-3 py-5">
-            {!errors ? (
-              <div>
-                <h1 className="font-bold text-3xl">{photo.title}</h1>
-                <div className="flex justify-start bg-gray-200 p-2 mb-2">
-                  <div>
-                    <h3 className="font-bold rounded-sm">
-                      Photo by:{" "}
-                      <span className="font-semibold ">{photo.copyright}</span>
-                    </h3>
-                  </div>
-                  <div>
-                    <h3 className="font-bold rounded-sm ml-4">
-                      Picture for:{" "}
-                      <span className="font-semibold ">{photo.date}</span>
-                    </h3>
-                  </div>
+            <div>
+              <h1 className="font-bold text-3xl">{photo.title}</h1>
+              <div className="flex justify-start bg-gray-200 p-2 mb-2">
+                <div>
+                  <h3 className="font-bold rounded-sm">
+                    Photo by:{" "}
+                    <span className="font-semibold ">{photo.copyright}</span>
+                  </h3>
                 </div>
-                <p>{photo.explanation}</p>
+                <div>
+                  <h3 className="font-bold rounded-sm ml-4">
+                    Picture for:{" "}
+                    <span className="font-semibold ">{photo.date}</span>
+                  </h3>
+                </div>
               </div>
-            ) : (
-              <> </>
-            )}
+              <p>{photo.explanation}</p>
+            </div>
           </div>
         </div>
         <button
