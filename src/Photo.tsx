@@ -32,14 +32,12 @@ const Photo: React.FC = () => {
   const dateRef = useRef<any>(moment(selectedDate));
 
   const handleClose = () => {
-    const dateSelected = new Date(selectedDate);
+    let dateSelected = moment(new Date(selectedDate));
     if (selectedDate === dateRef.current) {
       return;
     }
-    const dateArray = dateSelected.toLocaleDateString().split("/");
-
-    const buildDateStr = `${dateArray[2]}-${dateArray[1]}-${dateArray[0]}`;
-    dispatch(getOtherDaysPhoto(buildDateStr, "NONE", "NONE"));
+    const formattedDate = dateSelected.format("YYYY-MM-DD");
+    dispatch(getOtherDaysPhoto(formattedDate, "NONE", "NONE"));
     dateRef.current = selectedDate;
   };
 
@@ -82,8 +80,6 @@ const Photo: React.FC = () => {
       return;
     }
     dateRef.current = currDate;
-    console.log("In Next", currDate);
-
     dispatch(getOtherDaysPhoto(currDate, "NONE", "NONE"));
   };
 

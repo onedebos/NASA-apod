@@ -1,5 +1,5 @@
 import { db } from "../../services/firebase";
-
+import moment from "moment";
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -128,9 +128,9 @@ export const getTodaysPhoto = () => {
       dispatch(setLoading(true));
       dispatch(setErrors(""));
 
-      let todaysDate: any = new Date().toLocaleDateString().split("/");
-      let dateString = `${todaysDate[2]}-${todaysDate[1]}-${todaysDate[0]}`;
-      const res = await axios.get(buildFullUrl(dateString));
+      let todaysDate: any = moment(new Date());
+      todaysDate = todaysDate.format("YYYY-MM-DD");
+      const res = await axios.get(buildFullUrl(todaysDate));
 
       // if a picture has not been released for the day
       if (res.data.length < 1) {
@@ -164,11 +164,13 @@ export const getOtherDaysPhoto = (
   nextDayDateString: string
 ) => {
   return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
-    dispatch(setLoading(true));
-    dispatch(setErrors(""));
     try {
+      dispatch(setLoading(true));
+      dispatch(setErrors(""));
+
       const res = await axios.get(buildFullUrl(dateToFind));
       // TODO reformat to use undefined ? TypeScript method
+
       // For use in creating previews
       if (prevDayDateStr !== "NONE") {
         getPreviews(prevDayDateStr, "PREV_DAY");
