@@ -270,12 +270,16 @@ export const seeMoreAboutFavPhoto = (photo: object) => {
   };
 };
 
+////// FIRESTORE IMPLEMENTATION ////
+
 // Helper Fn to Post Photos to Firestore
-const sendToFireStore = (photo: object) => {
-  return db.collection("photos").doc().set(photo);
-};
+
+// const sendToFireStore = (photo: object) => {
+//   return db.collection("photos").doc().set(photo);
+// };
 
 // Helper Fn to get Photos from Firestore
+
 const getFromFireStore = () => {
   return db.collection("photos").get();
 };
