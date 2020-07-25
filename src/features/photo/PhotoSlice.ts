@@ -79,7 +79,6 @@ const photoSlice = createSlice({
         });
         data.push(payload);
         state.favorites = data;
-        console.log(data);
         localStorage.setItem("POTD", JSON.stringify(data));
       } else {
         data.push(payload);
@@ -118,17 +117,16 @@ export const getTodaysPhoto = () => {
       let todaysDate: any = new Date().toLocaleDateString().split("/");
       let dateString = `${todaysDate[2]}-${todaysDate[1]}-${todaysDate[0]}`;
       const res = await axios.get(buildFullUrl(dateString));
-      dispatch(setPhoto(res.data[0]));
-
-      dispatch(setLoading(false));
-
       // if a picture has not been released for the day
       if (res.data.length < 1) {
-        throw new Error("No picture of the day available.");
+        throw new Error(
+          "No picture of the day available. Please select a different date."
+        );
       }
+      dispatch(setPhoto(res.data[0]));
+      dispatch(setLoading(false));
     } catch (error) {
-      console.log(error);
-      dispatch(setErrors("No picture of the day available."));
+      dispatch(setErrors(error.message));
       dispatch(setLoading(false));
     }
   };
@@ -148,8 +146,7 @@ export const getOtherDaysPhoto = (dateToFind: string) => {
 
       dispatch(setLoading(false));
     } catch (error) {
-      console.log(error);
-      dispatch(setErrors("No picture of the day available."));
+      dispatch(setErrors(error.message));
       dispatch(setLoading(false));
     }
   };
@@ -157,8 +154,51 @@ export const getOtherDaysPhoto = (dateToFind: string) => {
 
 // SAVE Favorites to LocalStorage
 export const saveToStorage = (photo: object) => {
-  return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+  return (dispatch: (arg0: { payload: any; type: string }) => void) => {
     console.log("saved");
     dispatch(savePOTDToLocalStorage(photo));
+  };
+};
+
+// DELETE all favorites from localStorage
+export const deleteAllFromStorage = () => {
+  return (dispatch: (arg0: { type: string }) => void) => {
+    localStorage.clear();
+    dispatch(getFavorites());
+    console.log("deleted all");
+  };
+};
+
+// DELETE a  favorite from localStorage
+export const deleteOneFromStorage = (dateOfPhotoToDelete: string) => {
+  return (dispatch: (arg0: { type: string }) => void) => {
+    let POTDInStorage: any = localStorage.getItem("POTD");
+    if (POTDInStorage) {
+      POTDInStorage = JSON.parse(POTDInStorage);
+      POTDInStorage = POTDInStorage.filter(
+        (photo: any) => photo.date !== dateOfPhotoToDelete
+      );
+      if (POTDInStorage.length < 1) {
+        localStorage.clear();
+      } else {
+        localStorage.setItem("POTD", JSON.stringify(POTDInStorage));
+      }
+
+      dispatch(getFavorites());
+    }
+  };
+};
+
+// See Details about a Photo in Favorites
+export const seeMoreAboutFavPhoto = (photo: object) => {
+  return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+    dispatch(setLoading(true));
+    dispatch(setErrors(""));
+    try {
+      dispatch(setPhoto(photo));
+      dispatch(setLoading(false));
+    } catch (error) {
+      dispatch(setLoading(false));
+    }
   };
 };

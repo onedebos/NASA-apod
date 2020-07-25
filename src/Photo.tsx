@@ -92,18 +92,20 @@ const Photo: React.FC = () => {
     <div>
       <div className="grid grid-cols-4">
         <button
-          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-400 hover:bg-orange-800 text-white font-semibold transform rounded-md"
+          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-400 hover:bg-orange-800 text-white font-semibold transform rounded-md focus:outline-none"
           onClick={handlePrevDate}
         >
           Prev
         </button>
         <div className="flex flex-col justify-center m-auto min-w-full min-h-screen col-span-2">
           {loading ? (
-            "loading......"
+            <h1 className="font-bold text-2xl text-white p-3">loading......</h1>
           ) : (
             <div>
               {errors ? (
-                <h1 className="bg-red-500 font-bold text-2xl">{errors}</h1>
+                <h1 className="bg-red-500 font-bold text-2xl text-white p-3">
+                  {errors}
+                </h1>
               ) : (
                 <img
                   src={photo.url}
@@ -119,7 +121,7 @@ const Photo: React.FC = () => {
           )}
           <div className="flex justify-between mt-1">
             <button
-              className="bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-1/3 save-to-storage"
+              className="bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-1/3 save-to-storage focus:outline-none"
               onClick={handleSaveFavoritesToStorage}
             >
               Favorite
@@ -149,25 +151,29 @@ const Photo: React.FC = () => {
           </div>
           <div className="mt-3 py-5">
             <h1 className="font-bold text-3xl">{photo.title}</h1>
-            <div className="flex justify-start bg-gray-200 p-2 mb-2">
-              <div>
-                <h3 className="font-bold rounded-sm">
-                  Photo by:{" "}
-                  <span className="font-semibold ">{photo.copyright}</span>
-                </h3>
+            {!loading ? (
+              <div className="flex justify-start bg-gray-200 p-2 mb-2">
+                <div>
+                  <h3 className="font-bold rounded-sm">
+                    Photo by:{" "}
+                    <span className="font-semibold ">{photo.copyright}</span>
+                  </h3>
+                </div>
+                <div>
+                  <h3 className="font-bold rounded-sm ml-4">
+                    Picture for:{" "}
+                    <span className="font-semibold ">{photo.date}</span>
+                  </h3>
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold rounded-sm ml-4">
-                  Picture for:{" "}
-                  <span className="font-semibold ">{photo.date}</span>
-                </h3>
-              </div>
-            </div>
+            ) : (
+              <> </>
+            )}
             <p>{photo.explanation}</p>
           </div>
         </div>
         <button
-          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-400 hover:bg-orange-800 text-white font-semibold transform rounded-md"
+          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-400 hover:bg-orange-800 text-white font-semibold transform rounded-md focus:outline-none"
           onClick={handleNextDate}
         >
           Next
