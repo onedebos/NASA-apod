@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ScrollIntoView from "react-scroll-into-view";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import { Snackbar } from "@material-ui/core";
 import { useDispatch } from "react-redux";
@@ -91,17 +92,18 @@ const Favorites: React.FC<FavProps> = ({ favoritePhotos }) => {
               />
 
               <div className="flex justify-start mt-2 pr-3 md:pr-0">
-                <button
-                  className="bg-gray-500 p-2 text-white rounded-md font-bold hover:bg-gray-700 w-full focus:outline-none"
-                  onClick={() => {
-                    dispatch(seeMoreAboutFavPhoto(photo));
-                    setOpenSnackBar(true);
-                    setMessage("Scroll up to see more about this photo!");
-                    setTimeout(() => setOpenSnackBar(false), 2000);
-                  }}
-                >
-                  See more
-                </button>
+                <div className="bg-gray-500 p-2 text-white rounded-md font-bold hover:bg-gray-700 w-full">
+                  <ScrollIntoView selector="#see-more">
+                    <button
+                      className="focus:outline-none"
+                      onClick={() => {
+                        dispatch(seeMoreAboutFavPhoto(photo));
+                      }}
+                    >
+                      See more
+                    </button>
+                  </ScrollIntoView>
+                </div>
                 <button
                   className="bg-red-500 p-2 text-white rounded-md font-bold ml-4 hover:bg-red-700 w-full focus:outline-none"
                   onClick={() => handleDeletePictureFromStorage(photo.date)}

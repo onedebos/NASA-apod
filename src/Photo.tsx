@@ -110,7 +110,7 @@ const Photo: React.FC = () => {
 
   return (
     <div>
-      <div className="px-8 md:p-0 md:grid grid-cols-4">
+      <div className="px-8 md:p-0 md:grid grid-cols-4" id="see-more">
         <button
           className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-blue-400 hover:bg-blue-800 text-white font-semibold transform rounded-md focus:outline-none md:w-1/2 lg:w-1/2 hidden md:block"
           onClick={handlePrevDate}
