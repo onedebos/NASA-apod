@@ -57,7 +57,3 @@ npm start
 ## 📝 License
 
 This project is [MIT](lic.url) licensed.
-
-## Acknowledgments
-
-- [Tailwind template](https://www.tailwindtoolbox.com/templates/nordic-store)
