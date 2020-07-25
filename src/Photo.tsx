@@ -7,6 +7,7 @@ import {
   setSelectedDate,
   saveToStorage,
   getFavorites,
+  getPhotosFromDb,
 } from "./features/photo/PhotoSlice";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -85,6 +86,7 @@ const Photo: React.FC = () => {
   useEffect(() => {
     dispatch(getTodaysPhoto());
     dispatch(getFavorites());
+    dispatch(getPhotosFromDb());
     return () => {};
   }, [dispatch]);
 
@@ -101,7 +103,7 @@ const Photo: React.FC = () => {
           {loading ? (
             <h1 className="font-bold text-2xl text-white p-3">loading......</h1>
           ) : (
-            <div>
+            <div style={{ maxHeight: "50vh" }}>
               {errors ? (
                 <h1 className="bg-red-500 font-bold text-2xl text-white p-3">
                   {errors}
@@ -121,8 +123,12 @@ const Photo: React.FC = () => {
           )}
           <div className="flex justify-between mt-1">
             <button
-              className="bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-1/3 save-to-storage focus:outline-none"
+              className={`bg-gray-300 p-3 rounded-sm font-semibold ${
+                errors ? "" : "hover:bg-green-200"
+              }  transition ease-in-out w-1/3 save-to-storage focus:outline-none`}
               onClick={handleSaveFavoritesToStorage}
+              type="button"
+              disabled={errors || loading ? true : false}
             >
               Favorite
               <span>
@@ -150,26 +156,28 @@ const Photo: React.FC = () => {
             />
           </div>
           <div className="mt-3 py-5">
-            <h1 className="font-bold text-3xl">{photo.title}</h1>
-            {!loading ? (
-              <div className="flex justify-start bg-gray-200 p-2 mb-2">
-                <div>
-                  <h3 className="font-bold rounded-sm">
-                    Photo by:{" "}
-                    <span className="font-semibold ">{photo.copyright}</span>
-                  </h3>
+            {!loading && !errors ? (
+              <div>
+                <h1 className="font-bold text-3xl">{photo.title}</h1>
+                <div className="flex justify-start bg-gray-200 p-2 mb-2">
+                  <div>
+                    <h3 className="font-bold rounded-sm">
+                      Photo by:{" "}
+                      <span className="font-semibold ">{photo.copyright}</span>
+                    </h3>
+                  </div>
+                  <div>
+                    <h3 className="font-bold rounded-sm ml-4">
+                      Picture for:{" "}
+                      <span className="font-semibold ">{photo.date}</span>
+                    </h3>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-bold rounded-sm ml-4">
-                    Picture for:{" "}
-                    <span className="font-semibold ">{photo.date}</span>
-                  </h3>
-                </div>
+                <p>{photo.explanation}</p>
               </div>
             ) : (
               <> </>
             )}
-            <p>{photo.explanation}</p>
           </div>
         </div>
         <button

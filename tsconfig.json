@@ -15,5 +15,5 @@
     "noEmit": true,
     "jsx": "react"
   },
-  "include": ["src", "src/features"]
+  "include": ["src", "src/features", "src/services"]
 }

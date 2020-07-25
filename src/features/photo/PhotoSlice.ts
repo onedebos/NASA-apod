@@ -1,3 +1,5 @@
+import { db } from "../../services/firebase";
+
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -140,7 +142,9 @@ export const getOtherDaysPhoto = (dateToFind: string) => {
     try {
       const res = await axios.get(buildFullUrl(dateToFind));
       if (res.data.length < 1) {
-        throw new Error("No picture of the day available.");
+        throw new Error(
+          "No picture of the day available. Please select a different date."
+        );
       }
       dispatch(setPhoto(res.data[0]));
 
@@ -154,9 +158,13 @@ export const getOtherDaysPhoto = (dateToFind: string) => {
 
 // SAVE Favorites to LocalStorage
 export const saveToStorage = (photo: object) => {
-  return (dispatch: (arg0: { payload: any; type: string }) => void) => {
-    console.log("saved");
-    dispatch(savePOTDToLocalStorage(photo));
+  return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+    try {
+      await sendToFireStore(photo);
+      dispatch(savePOTDToLocalStorage(photo));
+    } catch (error) {
+      console.log(error);
+    }
   };
 };
 
@@ -199,6 +207,33 @@ export const seeMoreAboutFavPhoto = (photo: object) => {
       dispatch(setLoading(false));
     } catch (error) {
       dispatch(setLoading(false));
+    }
+  };
+};
+
+// Helper Fn to Post Photos to Firestore
+const sendToFireStore = (photo: object) => {
+  return db.collection("photos").doc().set(photo);
+};
+
+// Helper Fn to get Photos from Firestore
+const getFromFireStore = () => {
+  return db.collection("photos").get();
+};
+
+export const getPhotosFromDb = () => {
+  return async () => {
+    try {
+      console.log("loading");
+      let arr: any = [];
+      const photosInDb = await getFromFireStore();
+      console.log("done");
+      photosInDb.forEach((doc) => {
+        arr.push(doc.data());
+      });
+      console.log(arr);
+    } catch (error) {
+      console.log("error");
     }
   };
 };
