@@ -90,7 +90,7 @@ const Photo: React.FC = () => {
     // TODO if favorites increase show saved to favorites
     // else show already saved
 
-    setMessage("Saved to Favorites!");
+    setMessage("Saved to Favorites! Scroll down to see.");
     setOpenSnackBar(true);
     setTimeout(() => setOpenSnackBar(false), 2000);
     dispatch(saveToStorage(photo));
