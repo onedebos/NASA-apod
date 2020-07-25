@@ -77,6 +77,7 @@ const Photo: React.FC = () => {
   const handleSaveFavoritesToStorage = () => {
     // TODO if favorites increase show saved to favorites
     // else show already saved
+
     setMessage("Saved to Favorites!");
     setOpenSnackBar(true);
     setTimeout(() => setOpenSnackBar(false), 2000);
@@ -105,7 +106,7 @@ const Photo: React.FC = () => {
           ) : (
             <div style={{ maxHeight: "50vh" }}>
               {errors ? (
-                <h1 className="bg-red-500 font-bold text-2xl text-white p-3">
+                <h1 className="bg-red-500 rounded-md font-bold text-2xl text-white p-3">
                   {errors}
                 </h1>
               ) : (
