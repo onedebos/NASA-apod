@@ -28,8 +28,8 @@ type initState = {
   description: string;
   additionalMsg: string;
   selectedDate: any;
-  prevDayPhoto: string;
-  nextDayPhoto: string;
+  prevDayPhoto: object;
+  nextDayPhoto: object;
   favorites: FavoritesObjProps | any; //TODO check type
 };
 
@@ -41,8 +41,8 @@ export const initialState: initState = {
   additionalMsg: "",
   selectedDate: new Date().toISOString(),
   favorites: [],
-  prevDayPhoto: "",
-  nextDayPhoto: "",
+  prevDayPhoto: {},
+  nextDayPhoto: {},
 };
 
 const photoSlice = createSlice({
@@ -50,6 +50,12 @@ const photoSlice = createSlice({
   initialState,
   reducers: {
     setPhoto: (state: initState, { payload }) => {
+      state.photo = payload;
+    },
+    setPrevPhoto: (state: initState, { payload }) => {
+      state.photo = payload;
+    },
+    setNextPhoto: (state: initState, { payload }) => {
       state.photo = payload;
     },
     setLoading: (state: initState, { payload }) => {
@@ -100,6 +106,8 @@ const photoSlice = createSlice({
 });
 export const {
   setPhoto,
+  setPrevPhoto,
+  setNextPhoto,
   setLoading,
   setErrors,
   setDescription,
@@ -139,12 +147,25 @@ export const getTodaysPhoto = () => {
 };
 
 // GET Photo from other days
-export const getOtherDaysPhoto = (dateToFind: string) => {
+export const getOtherDaysPhoto = (
+  dateToFind: string,
+  prevDayDateStr: string,
+  nextDayDateString: string
+) => {
   return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
     dispatch(setLoading(true));
     dispatch(setErrors(""));
     try {
       const res = await axios.get(buildFullUrl(dateToFind));
+      // TODO reformat to use undefined ? TypeScript method
+      if (prevDayDateStr !== "NONE") {
+        getPreviews(prevDayDateStr, "PREV_DAY");
+      }
+
+      if (nextDayDateString !== "NONE") {
+        getPreviews(nextDayDateString, "NEXT_DAY");
+      }
+
       if (res.data.length < 1) {
         throw new Error(
           "No picture of the day available. Please select a different date."
@@ -156,6 +177,29 @@ export const getOtherDaysPhoto = (dateToFind: string) => {
     } catch (error) {
       dispatch(setErrors(error.message));
       dispatch(setLoading(false));
+    }
+  };
+};
+
+// GET previews
+export const getPreviews = (dateToFind: string, dayToPreview: string) => {
+  return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+    try {
+      const res = await axios.get(buildFullUrl(dateToFind));
+      if (res.data.length < 1) {
+        throw new Error(
+          "No picture of the day available. Please select a different date."
+        );
+      }
+      if (dayToPreview === "PREV_DAY") {
+        dispatch(setPrevPhoto(res.data[0]));
+      } else if (dayToPreview === "NEXT_DAY") {
+        dispatch(setNextPhoto(res.data[0]));
+      }
+
+      dispatch(setLoading(false));
+    } catch (error) {
+      console.log(error.message);
     }
   };
 };

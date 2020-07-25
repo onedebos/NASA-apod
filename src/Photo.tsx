@@ -7,7 +7,7 @@ import {
   setSelectedDate,
   saveToStorage,
   getFavorites,
-  getPhotosFromDb,
+  // getPhotosFromDb,
 } from "./features/photo/PhotoSlice";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -16,9 +16,15 @@ import { Snackbar } from "@material-ui/core";
 import Favorites from "./Favorites";
 
 const Photo: React.FC = () => {
-  const { photo, loading, errors, selectedDate, favorites } = useSelector(
-    photoSelector
-  );
+  const {
+    photo,
+    loading,
+    errors,
+    selectedDate,
+    favorites,
+    // prevDayPhoto,
+    // nextDayPhoto,
+  } = useSelector(photoSelector);
   const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const dispatch = useDispatch();
@@ -30,8 +36,9 @@ const Photo: React.FC = () => {
       return;
     }
     const dateArray = dateSelected.toLocaleDateString().split("/");
+
     const buildDateStr = `${dateArray[2]}-${dateArray[1]}-${dateArray[0]}`;
-    dispatch(getOtherDaysPhoto(buildDateStr));
+    dispatch(getOtherDaysPhoto(buildDateStr, "NONE", "NONE"));
     dateRef.current = selectedDate;
     console.log(buildDateStr);
   };
@@ -45,14 +52,21 @@ const Photo: React.FC = () => {
   const handlePrevDate = () => {
     let currDate: any = dateRef.current;
     currDate = moment(currDate);
+    let prevDate = currDate.subtract(2, "days");
+    let nextDate = currDate.add(2, "days");
     currDate = currDate.subtract(1, "days");
+
+    // TODO extract to fn
     currDate = currDate.format("YYYY-MM-DD");
-    const dateArray = currDate.split("-");
-    const buildDateStr = `${dateArray[0]}-${dateArray[1]}-${dateArray[2]}`;
-    dispatch(getOtherDaysPhoto(buildDateStr));
+    prevDate = prevDate.format("YYYY-MM-DD");
+    nextDate = nextDate.format("YYYY-MM-DD");
+
+    if (moment(nextDate).isAfter(moment())) {
+      nextDate = "NONE";
+    }
+    dispatch(getOtherDaysPhoto(currDate, prevDate, nextDate));
 
     dateRef.current = currDate;
-    console.log("In Prev", currDate);
   };
 
   const handleNextDate = () => {
@@ -69,9 +83,7 @@ const Photo: React.FC = () => {
     dateRef.current = currDate;
     console.log("In Next", currDate);
 
-    const dateArray = currDate.split("-");
-    const buildDateStr = `${dateArray[0]}-${dateArray[1]}-${dateArray[2]}`;
-    dispatch(getOtherDaysPhoto(buildDateStr));
+    dispatch(getOtherDaysPhoto(currDate, "NONE", "NONE"));
   };
 
   const handleSaveFavoritesToStorage = () => {
@@ -87,7 +99,7 @@ const Photo: React.FC = () => {
   useEffect(() => {
     dispatch(getTodaysPhoto());
     dispatch(getFavorites());
-    dispatch(getPhotosFromDb());
+    // dispatch(getPhotosFromDb()); Shows all favorites in DB
     return () => {};
   }, [dispatch]);
 
@@ -95,14 +107,16 @@ const Photo: React.FC = () => {
     <div>
       <div className="grid grid-cols-4">
         <button
-          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-400 hover:bg-orange-800 text-white font-semibold transform rounded-md focus:outline-none"
+          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-400 hover:bg-orange-800 text-white font-semibold transform rounded-md focus:outline-none md:w-1/2 lg:w-1/2"
           onClick={handlePrevDate}
         >
-          Prev
+          Previous Day
         </button>
         <div className="flex flex-col justify-center m-auto min-w-full min-h-screen col-span-2">
           {loading ? (
-            <h1 className="font-bold text-2xl text-white p-3">loading......</h1>
+            <h1 className="font-bold text-center text-2xl p-3">
+              loading Picture of the day....
+            </h1>
           ) : (
             <div style={{ maxHeight: "50vh" }}>
               {errors ? (
@@ -182,10 +196,10 @@ const Photo: React.FC = () => {
           </div>
         </div>
         <button
-          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-400 hover:bg-orange-800 text-white font-semibold transform rounded-md focus:outline-none"
+          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-500 hover:bg-orange-800 text-white font-semibold transform rounded-md focus:outline-none md:w-1/2 lg:w-1/2"
           onClick={handleNextDate}
         >
-          Next
+          Next Day
         </button>
       </div>
       <Snackbar open={openSnackBar} autoHideDuration={1000} message={message} />
