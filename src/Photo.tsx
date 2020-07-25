@@ -14,6 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 import { Snackbar } from "@material-ui/core";
 import Favorites from "./Favorites";
+import Loading from "./Loading";
 
 const Photo: React.FC = () => {
   const {
@@ -103,39 +104,38 @@ const Photo: React.FC = () => {
     return () => {};
   }, [dispatch]);
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <div>
       <div className="grid grid-cols-4">
         <button
-          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-400 hover:bg-orange-800 text-white font-semibold transform rounded-md focus:outline-none md:w-1/2 lg:w-1/2"
+          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-blue-400 hover:bg-blue-800 text-white font-semibold transform rounded-md focus:outline-none md:w-1/2 lg:w-1/2"
           onClick={handlePrevDate}
         >
           Previous Day
         </button>
         <div className="flex flex-col justify-center m-auto min-w-full min-h-screen col-span-2">
-          {loading ? (
-            <h1 className="font-bold text-center text-2xl p-3">
-              loading Picture of the day....
-            </h1>
-          ) : (
-            <div style={{ maxHeight: "50vh" }}>
-              {errors ? (
-                <h1 className="bg-red-500 rounded-md font-bold text-2xl text-white p-3">
-                  {errors}
-                </h1>
-              ) : (
-                <img
-                  src={photo.url}
-                  alt={photo.explanation}
-                  style={{
-                    maxHeight: "50vh",
-                    minHeight: "50vh",
-                    margin: "1.5em auto",
-                  }}
-                />
-              )}
-            </div>
-          )}
+          <div style={{ maxHeight: "50vh" }}>
+            {errors ? (
+              <h1 className="bg-red-500 rounded-md font-bold text-2xl text-white p-3">
+                {errors}
+              </h1>
+            ) : (
+              <img
+                src={photo.url}
+                alt={photo.explanation}
+                style={{
+                  maxHeight: "50vh",
+                  minHeight: "50vh",
+                  margin: "1.5em auto",
+                }}
+              />
+            )}
+          </div>
+
           <div className="flex justify-between mt-1">
             <button
               className={`bg-gray-300 p-3 rounded-sm font-semibold ${
@@ -143,7 +143,7 @@ const Photo: React.FC = () => {
               }  transition ease-in-out w-1/3 save-to-storage focus:outline-none`}
               onClick={handleSaveFavoritesToStorage}
               type="button"
-              disabled={errors || loading ? true : false}
+              disabled={errors ? true : false}
             >
               Favorite
               <span>
@@ -171,7 +171,7 @@ const Photo: React.FC = () => {
             />
           </div>
           <div className="mt-3 py-5">
-            {!loading && !errors ? (
+            {!errors ? (
               <div>
                 <h1 className="font-bold text-3xl">{photo.title}</h1>
                 <div className="flex justify-start bg-gray-200 p-2 mb-2">
@@ -196,7 +196,7 @@ const Photo: React.FC = () => {
           </div>
         </div>
         <button
-          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-orange-500 hover:bg-orange-800 text-white font-semibold transform rounded-md focus:outline-none md:w-1/2 lg:w-1/2"
+          className="col-span-1 text-center justify-center flex items-center m-auto p-3 w-1/4 transition duration-200 ease-in-out bg-blue-500 hover:bg-blue-800 text-white font-semibold transform rounded-md focus:outline-none md:w-1/2 lg:w-1/2"
           onClick={handleNextDate}
         >
           Next Day

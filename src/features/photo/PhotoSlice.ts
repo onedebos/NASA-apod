@@ -131,6 +131,7 @@ export const getTodaysPhoto = () => {
       let todaysDate: any = new Date().toLocaleDateString().split("/");
       let dateString = `${todaysDate[2]}-${todaysDate[1]}-${todaysDate[0]}`;
       const res = await axios.get(buildFullUrl(dateString));
+
       // if a picture has not been released for the day
       if (res.data.length < 1) {
         throw new Error(
@@ -140,6 +141,11 @@ export const getTodaysPhoto = () => {
       dispatch(setPhoto(res.data[0]));
       dispatch(setLoading(false));
     } catch (error) {
+      if (error.message === "Request failed with status code 504") {
+        return dispatch(
+          setErrors("Looks like our servers are down. Please try again later.")
+        );
+      }
       dispatch(setErrors(error.message));
       dispatch(setLoading(false));
     }

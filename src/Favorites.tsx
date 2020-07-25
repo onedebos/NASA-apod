@@ -69,7 +69,7 @@ const Favorites: React.FC<FavProps> = ({ favoritePhotos }) => {
       <h1 className="font-bold text-5xl">Favorites!</h1>
 
       <button
-        className="bg-red-500 p-2 rounded-sm text-white font-bold mb-4 hover:bg-red-700 focus:outline-none"
+        className="bg-red-500 p-2 rounded-sm text-white font-bold mb-4 hover:bg-red-700 focus:outline-none clear-all"
         type="button"
         onClick={handleDeleteAllFavorites}
       >
