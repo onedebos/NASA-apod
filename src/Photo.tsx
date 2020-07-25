@@ -41,7 +41,6 @@ const Photo: React.FC = () => {
     const buildDateStr = `${dateArray[2]}-${dateArray[1]}-${dateArray[0]}`;
     dispatch(getOtherDaysPhoto(buildDateStr, "NONE", "NONE"));
     dateRef.current = selectedDate;
-    console.log(buildDateStr);
   };
 
   const disableDates = (date: any, days: number) => {
@@ -58,6 +57,7 @@ const Photo: React.FC = () => {
     currDate = currDate.subtract(1, "days");
 
     // TODO extract to fn
+
     currDate = currDate.format("YYYY-MM-DD");
     prevDate = prevDate.format("YYYY-MM-DD");
     nextDate = nextDate.format("YYYY-MM-DD");

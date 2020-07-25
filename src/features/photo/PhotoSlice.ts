@@ -169,6 +169,7 @@ export const getOtherDaysPhoto = (
     try {
       const res = await axios.get(buildFullUrl(dateToFind));
       // TODO reformat to use undefined ? TypeScript method
+      // For use in creating previews
       if (prevDayDateStr !== "NONE") {
         getPreviews(prevDayDateStr, "PREV_DAY");
       }
