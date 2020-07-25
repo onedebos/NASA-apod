@@ -93,7 +93,12 @@ const Favorites: React.FC<FavProps> = ({ favoritePhotos }) => {
               <div className="flex justify-start mt-2 pr-3 md:pr-0">
                 <button
                   className="bg-gray-500 p-2 text-white rounded-md font-bold hover:bg-gray-700 w-full focus:outline-none"
-                  onClick={() => dispatch(seeMoreAboutFavPhoto(photo))}
+                  onClick={() => {
+                    dispatch(seeMoreAboutFavPhoto(photo));
+                    setOpenSnackBar(true);
+                    setMessage("Scroll up to see more about this photo!");
+                    setTimeout(() => setOpenSnackBar(false), 2000);
+                  }}
                 >
                   See more
                 </button>
