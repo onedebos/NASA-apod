@@ -28,6 +28,8 @@ type initState = {
   description: string;
   additionalMsg: string;
   selectedDate: any;
+  prevDayPhoto: string;
+  nextDayPhoto: string;
   favorites: FavoritesObjProps | any; //TODO check type
 };
 
@@ -39,6 +41,8 @@ export const initialState: initState = {
   additionalMsg: "",
   selectedDate: new Date().toISOString(),
   favorites: [],
+  prevDayPhoto: "",
+  nextDayPhoto: "",
 };
 
 const photoSlice = createSlice({
@@ -163,7 +167,7 @@ export const saveToStorage = (photo: object) => {
       await sendToFireStore(photo);
       dispatch(savePOTDToLocalStorage(photo));
     } catch (error) {
-      console.log(error);
+      dispatch(setErrors("There was an issue saving to the DB."));
     }
   };
 };
@@ -221,6 +225,7 @@ const getFromFireStore = () => {
   return db.collection("photos").get();
 };
 
+// Get photos from DB
 export const getPhotosFromDb = () => {
   return async () => {
     try {
