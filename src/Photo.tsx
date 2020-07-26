@@ -30,8 +30,10 @@ const Photo: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const dispatch = useDispatch();
   const dateRef = useRef<any>(moment(selectedDate));
+  const [isImg, setIsImg] = useState<boolean>(true);
 
   const handleClose = () => {
+    setIsImg(true);
     let dateSelected = moment(new Date(selectedDate));
     if (selectedDate === dateRef.current) {
       return;
@@ -48,6 +50,7 @@ const Photo: React.FC = () => {
   };
 
   const handlePrevDate = () => {
+    setIsImg(true);
     let currDate: any = dateRef.current;
     currDate = moment(currDate);
     let prevDate = currDate.subtract(2, "days");
@@ -69,6 +72,7 @@ const Photo: React.FC = () => {
   };
 
   const handleNextDate = () => {
+    setIsImg(true);
     let currDate: any = dateRef.current;
     let momentFormatted = moment(dateRef.current);
 
@@ -86,13 +90,16 @@ const Photo: React.FC = () => {
   const handleSaveFavoritesToStorage = () => {
     // TODO if favorites increase show saved to favorites
     // else show already saved
-
+    setIsImg(true);
     setMessage("Saved to Favorites! Scroll down to see.");
     setOpenSnackBar(true);
     setTimeout(() => setOpenSnackBar(false), 2000);
     dispatch(saveToStorage(photo));
   };
 
+  const handleImgNotLoading = () => {
+    setIsImg(false);
+  };
   useEffect(() => {
     dispatch(getTodaysPhoto());
     dispatch(getFavorites());
@@ -115,15 +122,30 @@ const Photo: React.FC = () => {
         </button>
         <div className="flex flex-col justify-center m-auto min-w-full min-h-screen col-span-2">
           <div style={{ maxHeight: "50vh" }}>
-            <img
-              src={photo.url}
-              alt={photo.explanation}
-              style={{
-                maxHeight: "50vh",
-                minHeight: "50vh",
-                margin: "1.5em auto",
-              }}
-            />
+            {isImg ? (
+              <img
+                src={photo.url}
+                alt={photo.explanation}
+                onError={handleImgNotLoading}
+                style={{
+                  maxHeight: "50vh",
+                  minHeight: "50vh",
+                  margin: "1.5em auto",
+                }}
+              />
+            ) : (
+              <iframe
+                className="w-full"
+                style={{
+                  maxHeight: "50vh",
+                  minHeight: "50vh",
+                  maxWidth: "100vw",
+                  margin: "0.5em auto",
+                }}
+                src={photo.url}
+                title={photo.title}
+              />
+            )}
           </div>
 
           <div className="flex md:justify-between flex-col md:flex-row mt-1">

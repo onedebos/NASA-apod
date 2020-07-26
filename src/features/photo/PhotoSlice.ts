@@ -10,7 +10,7 @@ const buildFullUrl = (startDate: string) => {
   return `${baseURL}?api_key=${apiKey}&start_date=${startDate}&end_date=${startDate}`;
 };
 
-interface FavoritesObjProps {
+interface IFavoriteObjProps {
   date: string;
   copyright: string;
   explanation: string;
@@ -27,10 +27,10 @@ type initState = {
   errors: string;
   description: string;
   additionalMsg: string;
-  selectedDate: any;
+  selectedDate: string;
   prevDayPhoto: object;
   nextDayPhoto: object;
-  favorites: FavoritesObjProps | any; //TODO check type
+  favorites: Array<IFavoriteObjProps> | object; //TODO check type
 };
 
 export const initialState: initState = {
@@ -78,12 +78,12 @@ const photoSlice = createSlice({
         date: string;
       }
 
-      let POTDInStorage: any = localStorage.getItem("POTD");
-      let data: any = [];
+      const POTDInStorage: string | null = localStorage.getItem("POTD");
+      let data: Array<object> = [];
 
       if (POTDInStorage) {
-        POTDInStorage = JSON.parse(POTDInStorage);
-        POTDInStorage.map((photo: Photo) => {
+        const photosInStorage: Array<Photo> = JSON.parse(POTDInStorage);
+        photosInStorage.map((photo: Photo) => {
           if (photo.date !== payload.date) {
             data.push(photo);
           }
@@ -99,7 +99,8 @@ const photoSlice = createSlice({
       }
     },
     getFavorites: (state: initState) => {
-      let POTDInStorage: any = localStorage.getItem("POTD");
+      const POTDInStorage: any = localStorage.getItem("POTD");
+
       state.favorites = JSON.parse(POTDInStorage);
     },
   },
@@ -123,7 +124,12 @@ export const photoSelector = (state: { photo: any }) => state.photo;
 
 // GET TODAY's PHOTO
 export const getTodaysPhoto = () => {
-  return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+  return async (
+    dispatch: (arg0: {
+      payload: Array<IFavoriteObjProps>;
+      type: string;
+    }) => void
+  ) => {
     try {
       dispatch(setLoading(true));
       dispatch(setErrors(""));
@@ -163,7 +169,12 @@ export const getOtherDaysPhoto = (
   prevDayDateStr: string,
   nextDayDateString: string
 ) => {
-  return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+  return async (
+    dispatch: (arg0: {
+      payload: Array<IFavoriteObjProps>;
+      type: string;
+    }) => void
+  ) => {
     try {
       dispatch(setLoading(true));
       dispatch(setErrors(""));
@@ -197,7 +208,12 @@ export const getOtherDaysPhoto = (
 
 // GET previews
 export const getPreviews = (dateToFind: string, dayToPreview: string) => {
-  return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+  return async (
+    dispatch: (arg0: {
+      payload: Array<IFavoriteObjProps>;
+      type: string;
+    }) => void
+  ) => {
     try {
       const res = await axios.get(buildFullUrl(dateToFind));
       if (res.data.length < 1) {
@@ -220,7 +236,12 @@ export const getPreviews = (dateToFind: string, dayToPreview: string) => {
 
 // SAVE Favorites to LocalStorage
 export const saveToStorage = (photo: object) => {
-  return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+  return async (
+    dispatch: (arg0: {
+      payload: Array<IFavoriteObjProps>;
+      type: string;
+    }) => void
+  ) => {
     try {
       // await sendToFireStore(photo);  // IF ENABLED, SENDS FAVORITE TO FIRESTORE
       dispatch(savePOTDToLocalStorage(photo));
@@ -242,16 +263,19 @@ export const deleteAllFromStorage = () => {
 // DELETE a  favorite from localStorage
 export const deleteOneFromStorage = (dateOfPhotoToDelete: string) => {
   return (dispatch: (arg0: { type: string }) => void) => {
-    let POTDInStorage: any = localStorage.getItem("POTD");
+    const POTDInStorage: string | null = localStorage.getItem("POTD");
     if (POTDInStorage) {
-      POTDInStorage = JSON.parse(POTDInStorage);
-      POTDInStorage = POTDInStorage.filter(
-        (photo: any) => photo.date !== dateOfPhotoToDelete
+      let photosFromStorage: Array<IFavoriteObjProps> = JSON.parse(
+        POTDInStorage
       );
-      if (POTDInStorage.length < 1) {
+      photosFromStorage = photosFromStorage.filter(
+        (photo: IFavoriteObjProps) => photo.date !== dateOfPhotoToDelete
+      );
+
+      if (photosFromStorage.length < 1) {
         localStorage.clear();
       } else {
-        localStorage.setItem("POTD", JSON.stringify(POTDInStorage));
+        localStorage.setItem("POTD", JSON.stringify(photosFromStorage));
       }
 
       dispatch(getFavorites());
@@ -261,7 +285,9 @@ export const deleteOneFromStorage = (dateOfPhotoToDelete: string) => {
 
 // See Details about a Photo in Favorites
 export const seeMoreAboutFavPhoto = (photo: object) => {
-  return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+  return async (
+    dispatch: (arg0: { payload: IFavoriteObjProps; type: string }) => void
+  ) => {
     dispatch(setLoading(true));
     dispatch(setErrors(""));
     try {
@@ -292,7 +318,7 @@ export const getPhotosFromDb = () => {
   return async () => {
     try {
       console.log("loading");
-      let arr: any = [];
+      let arr: Array<object> = [];
       const photosInDb = await getFromFireStore();
       console.log("done");
       photosInDb.forEach((doc) => {

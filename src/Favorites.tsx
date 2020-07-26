@@ -9,7 +9,7 @@ import {
   seeMoreAboutFavPhoto,
 } from "./features/photo/PhotoSlice";
 
-interface FavoritesProps {
+interface IFavoriteProps {
   date: string;
   copyright: string;
   hd_url: string;
@@ -20,19 +20,19 @@ interface FavoritesProps {
   explanation: string;
 }
 
-interface FavProps {
-  favoritePhotos: any;
+interface IFavProps {
+  favoritePhotos: Array<PhotoType>;
 }
 
 interface PhotoType {
-  photo: FavoritesProps;
+  photo: IFavoriteProps;
   url: string;
   title: string;
   date: string;
   explanation: string;
 }
 
-const Favorites: React.FC<FavProps> = ({ favoritePhotos }) => {
+const Favorites: React.FC<IFavProps> = ({ favoritePhotos }) => {
   const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const dispatch = useDispatch();
@@ -44,7 +44,7 @@ const Favorites: React.FC<FavProps> = ({ favoritePhotos }) => {
     setTimeout(() => setOpenSnackBar(false), 2000);
   };
 
-  const handleDeletePictureFromStorage: any = (date: string) => {
+  const handleDeletePictureFromStorage = (date: string) => {
     dispatch(deleteOneFromStorage(date));
     setOpenSnackBar(true);
     setMessage("Deleted that photo!");
@@ -84,6 +84,9 @@ const Favorites: React.FC<FavProps> = ({ favoritePhotos }) => {
               <img
                 src={photo.url}
                 alt={photo.explanation}
+                onError={(e: any) => {
+                  e.target.alt = "This is a video. Click See more to watch.";
+                }}
                 style={{
                   height: "300px",
                   width: "300px",
