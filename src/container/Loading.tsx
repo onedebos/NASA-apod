@@ -1,7 +1,7 @@
 import React from "react";
-import logo from "./logo.png";
+import logo from "../assets/images/logo.png";
 import { useSelector } from "react-redux";
-import { photoSelector } from "./features/photo/PhotoSlice";
+import { photoSelector } from "../features/photo/PhotoSlice";
 
 const Loading = () => {
   const { errors } = useSelector(photoSelector);

@@ -1,14 +1,7 @@
 import { db } from "../../services/firebase";
 import moment from "moment";
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const apiKey: string | undefined = process.env.REACT_APP_API_KEY;
-const baseURL: string = "https://api.nasa.gov/planetary/apod";
-
-const buildFullUrl = (startDate: string) => {
-  return `${baseURL}?api_key=${apiKey}&start_date=${startDate}&end_date=${startDate}`;
-};
+import getPictureData from "../../services/service";
 
 interface IFavoriteObjProps {
   date: string;
@@ -136,8 +129,8 @@ export const getTodaysPhoto = () => {
 
       let todaysDate: any = moment(new Date());
       todaysDate = todaysDate.format("YYYY-MM-DD");
-      const res = await axios.get(buildFullUrl(todaysDate));
 
+      const res = await getPictureData(todaysDate);
       // if a picture has not been released for the day
       if (res.data.length < 1) {
         throw new Error(
@@ -179,7 +172,7 @@ export const getOtherDaysPhoto = (
       dispatch(setLoading(true));
       dispatch(setErrors(""));
 
-      const res = await axios.get(buildFullUrl(dateToFind));
+      const res = await getPictureData(dateToFind);
       // TODO reformat to use undefined ? TypeScript method
 
       // For use in creating previews
@@ -215,7 +208,7 @@ export const getPreviews = (dateToFind: string, dayToPreview: string) => {
     }) => void
   ) => {
     try {
-      const res = await axios.get(buildFullUrl(dateToFind));
+      const res = await getPictureData(dateToFind);
       if (res.data.length < 1) {
         throw new Error(
           "No picture of the day available. Please select a different date."
