@@ -19,7 +19,6 @@ import Loading from "./Loading";
 import PhotoStory from "../components/PhotoStory";
 import DirectionalButton from "../components/DirectionalButton";
 import { Link } from "react-router-dom";
-import { PhotoObj } from "../common/types";
 import { v4 as uuidv4 } from "uuid";
 
 const Photo: React.FC = () => {
@@ -104,7 +103,7 @@ const Photo: React.FC = () => {
     setIsImg(false);
   };
 
-  const handleSaveToDb = (photo: PhotoObj) => {
+  const handleSaveToDb = () => {
     const id = uuidv4();
     const photoWithId: any = { photo, id };
     dispatch(saveToDb(photoWithId));
@@ -203,7 +202,7 @@ const Photo: React.FC = () => {
           <div className="md:flex">
             <button
               className="shadow-md rounded-sm w-1/4 bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-full md:w-1/3 focus:outline-none mt-1 md:mt-0 mb-4"
-              onClick={() => handleSaveToDb(photo)}
+              onClick={handleSaveToDb}
             >
               Super Like!
             </button>
