@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fullhuman/postcss-purgecss": "^2.3.0",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@reduxjs/toolkit": "^1.4.0",
@@ -32,7 +33,7 @@
   "scripts": {
     "start": "npm run build:css && react-scripts start",
     "build:css": "postcss src/assets/styles/tailwind.css -o src/assets/styles/index.css",
-    "build": "npm run build:css && react-scripts build",
+    "build": "NODE_ENV=production npm run build:css && react-scripts build",
     "test": "cypress run -- --spec cypress/integration/unit/local_storage.spec.js",
     "test:open": "cypress open -- --spec cypress/integration/unit/local_storage.spec.js",
     "eject": "react-scripts eject"
