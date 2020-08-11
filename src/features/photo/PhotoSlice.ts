@@ -1,82 +1,68 @@
-import { db } from "../../services/firebase";
 import moment from "moment";
 import { createSlice } from "@reduxjs/toolkit";
-import getPictureData from "../../services/service";
+import {
+  getPictureData,
+  getFromFireStore,
+  sendToFireStore,
+  deleteFromFireStore,
+} from "../../services/service";
+import { PhotoObj, PhotoState } from "../../common/types";
 
-interface IFavoriteObjProps {
-  date: string;
-  copyright: string;
-  explanation: string;
-  hd_url: string;
-  media_type: string;
-  service_version: string;
-  title: string;
-  url: string;
-}
-
-type initState = {
-  loading: boolean;
-  photo: object;
-  errors: string;
-  description: string;
-  additionalMsg: string;
-  selectedDate: string;
-  prevDayPhoto: object;
-  nextDayPhoto: object;
-  favorites: Array<IFavoriteObjProps> | object; //TODO check type
-};
-
-export const initialState: initState = {
+export const initialState: PhotoState = {
   loading: false,
-  photo: {},
+  photo: {
+    date: "",
+    copyright: "",
+    explanation: "",
+    hd_url: "",
+    media_type: "",
+    service_version: "",
+    title: "",
+    url: "",
+  },
   errors: "",
   description: "",
   additionalMsg: "",
   selectedDate: new Date().toISOString(),
   favorites: [],
-  prevDayPhoto: {},
-  nextDayPhoto: {},
+  photosInDb: [],
 };
 
 const photoSlice = createSlice({
   name: "photo",
   initialState,
   reducers: {
-    setPhoto: (state: initState, { payload }) => {
+    setPhoto: (state: PhotoState, { payload }) => {
       state.photo = payload;
     },
-    setPrevPhoto: (state: initState, { payload }) => {
+    setPrevPhoto: (state: PhotoState, { payload }) => {
       state.photo = payload;
     },
-    setNextPhoto: (state: initState, { payload }) => {
+    setNextPhoto: (state: PhotoState, { payload }) => {
       state.photo = payload;
     },
-    setLoading: (state: initState, { payload }) => {
+    setLoading: (state: PhotoState, { payload }) => {
       state.loading = payload;
     },
-    setErrors: (state: initState, { payload }) => {
+    setErrors: (state: PhotoState, { payload }) => {
       state.errors = payload;
     },
-    setDescription: (state: initState, { payload }) => {
+    setDescription: (state: PhotoState, { payload }) => {
       state.description = payload;
     },
-    setAdditionalMsg: (state: initState, { payload }) => {
+    setAdditionalMsg: (state: PhotoState, { payload }) => {
       state.additionalMsg = payload;
     },
-    setSelectedDate: (state: initState, { payload }) => {
+    setSelectedDate: (state: PhotoState, { payload }) => {
       state.selectedDate = payload;
     },
-    savePOTDToLocalStorage: (state: initState, { payload }) => {
-      interface Photo {
-        date: string;
-      }
-
+    savePOTDToLocalStorage: (state: PhotoState, { payload }) => {
       const POTDInStorage: string | null = localStorage.getItem("POTD");
-      let data: Array<object> = [];
+      let data: Array<PhotoObj> = [];
 
       if (POTDInStorage) {
-        const photosInStorage: Array<Photo> = JSON.parse(POTDInStorage);
-        photosInStorage.map((photo: Photo) => {
+        const photosInStorage: Array<PhotoObj> = JSON.parse(POTDInStorage);
+        photosInStorage.map((photo: PhotoObj) => {
           if (photo.date !== payload.date) {
             data.push(photo);
           }
@@ -91,10 +77,12 @@ const photoSlice = createSlice({
         localStorage.setItem("POTD", JSON.stringify(data));
       }
     },
-    getFavorites: (state: initState) => {
+    getFavorites: (state: PhotoState) => {
       const POTDInStorage: any = localStorage.getItem("POTD");
-
       state.favorites = JSON.parse(POTDInStorage);
+    },
+    setPhotosFromDb: (state: PhotoState, { payload }) => {
+      state.photosInDb = payload;
     },
   },
 });
@@ -109,19 +97,17 @@ export const {
   setAdditionalMsg,
   savePOTDToLocalStorage,
   getFavorites,
+  setPhotosFromDb,
 } = photoSlice.actions;
 
 export default photoSlice.reducer;
 
-export const photoSelector = (state: { photo: any }) => state.photo;
+export const photoSelector = (state: { photo: PhotoState }) => state.photo;
 
 // GET TODAY's PHOTO
 export const getTodaysPhoto = () => {
   return async (
-    dispatch: (arg0: {
-      payload: Array<IFavoriteObjProps>;
-      type: string;
-    }) => void
+    dispatch: (arg0: { payload: Array<PhotoObj>; type: string }) => void
   ) => {
     try {
       dispatch(setLoading(true));
@@ -157,32 +143,15 @@ export const getTodaysPhoto = () => {
 };
 
 // GET Photo from other days
-export const getOtherDaysPhoto = (
-  dateToFind: string,
-  prevDayDateStr: string,
-  nextDayDateString: string
-) => {
+export const getOtherDaysPhoto = (dateToFind: string) => {
   return async (
-    dispatch: (arg0: {
-      payload: Array<IFavoriteObjProps>;
-      type: string;
-    }) => void
+    dispatch: (arg0: { payload: Array<PhotoObj>; type: string }) => void
   ) => {
     try {
       dispatch(setLoading(true));
       dispatch(setErrors(""));
 
       const res = await getPictureData(dateToFind);
-      // TODO reformat to use undefined ? TypeScript method
-
-      // For use in creating previews
-      if (prevDayDateStr !== "NONE") {
-        getPreviews(prevDayDateStr, "PREV_DAY");
-      }
-
-      if (nextDayDateString !== "NONE") {
-        getPreviews(nextDayDateString, "NEXT_DAY");
-      }
 
       if (res.data.length < 1) {
         throw new Error(
@@ -200,43 +169,24 @@ export const getOtherDaysPhoto = (
 };
 
 // GET previews
-export const getPreviews = (dateToFind: string, dayToPreview: string) => {
+export const getPreviews = (dayBefore: any, dayAfter: any) => {
   return async (
-    dispatch: (arg0: {
-      payload: Array<IFavoriteObjProps>;
-      type: string;
-    }) => void
+    dispatch: (arg0: { payload: Array<PhotoObj>; type: string }) => void
   ) => {
-    try {
-      const res = await getPictureData(dateToFind);
-      if (res.data.length < 1) {
-        throw new Error(
-          "No picture of the day available. Please select a different date."
-        );
-      }
-      if (dayToPreview === "PREV_DAY") {
-        dispatch(setPrevPhoto(res.data[0]));
-      } else if (dayToPreview === "NEXT_DAY") {
-        dispatch(setNextPhoto(res.data[0]));
-      }
+    //   try {
+    //     const previewDayBefore = await getPictureData(dayBefore);
+    //     const previewDayAfter = await getPictureData(dayAfter);
 
-      dispatch(setLoading(false));
-    } catch (error) {
-      console.log(error.message);
-    }
+    console.log(dayBefore, dayAfter);
   };
 };
 
 // SAVE Favorites to LocalStorage
-export const saveToStorage = (photo: object) => {
+export const saveToStorage = (photo: PhotoObj) => {
   return async (
-    dispatch: (arg0: {
-      payload: Array<IFavoriteObjProps>;
-      type: string;
-    }) => void
+    dispatch: (arg0: { payload: Array<PhotoObj>; type: string }) => void
   ) => {
     try {
-      // await sendToFireStore(photo);  // IF ENABLED, SENDS FAVORITE TO FIRESTORE
       dispatch(savePOTDToLocalStorage(photo));
     } catch (error) {
       dispatch(setErrors("There was an issue saving to the DB."));
@@ -258,11 +208,9 @@ export const deleteOneFromStorage = (dateOfPhotoToDelete: string) => {
   return (dispatch: (arg0: { type: string }) => void) => {
     const POTDInStorage: string | null = localStorage.getItem("POTD");
     if (POTDInStorage) {
-      let photosFromStorage: Array<IFavoriteObjProps> = JSON.parse(
-        POTDInStorage
-      );
+      let photosFromStorage: Array<PhotoObj> = JSON.parse(POTDInStorage);
       photosFromStorage = photosFromStorage.filter(
-        (photo: IFavoriteObjProps) => photo.date !== dateOfPhotoToDelete
+        (photo: PhotoObj) => photo.date !== dateOfPhotoToDelete
       );
 
       if (photosFromStorage.length < 1) {
@@ -279,7 +227,7 @@ export const deleteOneFromStorage = (dateOfPhotoToDelete: string) => {
 // See Details about a Photo in Favorites
 export const seeMoreAboutFavPhoto = (photo: object) => {
   return async (
-    dispatch: (arg0: { payload: IFavoriteObjProps; type: string }) => void
+    dispatch: (arg0: { payload: PhotoObj; type: string }) => void
   ) => {
     dispatch(setLoading(true));
     dispatch(setErrors(""));
@@ -292,34 +240,52 @@ export const seeMoreAboutFavPhoto = (photo: object) => {
   };
 };
 
-////// FIRESTORE IMPLEMENTATION ////
+// Save Photos to DB
 
-// Helper Fn to Post Photos to Firestore
-
-// const sendToFireStore = (photo: object) => {
-//   return db.collection("photos").doc().set(photo);
-// };
-
-// Helper Fn to get Photos from Firestore
-
-const getFromFireStore = () => {
-  return db.collection("photos").get();
+export const saveToDb = (photo: PhotoObj) => {
+  return async (
+    dispatch: (arg0: { payload: PhotoObj; type: string }) => void
+  ) => {
+    dispatch(setLoading(true));
+    dispatch(setErrors(""));
+    try {
+      await sendToFireStore(photo);
+      dispatch(setLoading(false));
+    } catch (error) {
+      dispatch(setErrors(error));
+    }
+  };
 };
 
 // Get photos from DB
 export const getPhotosFromDb = () => {
-  return async () => {
+  return async (
+    dispatch: (arg0: { payload: PhotoObj; type: string }) => void
+  ) => {
+    dispatch(setLoading(true));
     try {
-      console.log("loading");
       let arr: Array<object> = [];
-      const photosInDb = await getFromFireStore();
-      console.log("done");
-      photosInDb.forEach((doc) => {
+      const photosInDatabase = await getFromFireStore();
+      dispatch(setLoading(false));
+      photosInDatabase.forEach((doc) => {
         arr.push(doc.data());
       });
-      console.log(arr);
+
+      dispatch(setPhotosFromDb(arr));
     } catch (error) {
       console.log("error");
+      dispatch(setLoading(false));
     }
+  };
+};
+
+// Delete Photos from DB
+export const deleteFromDb = (photo: string) => {
+  return async (
+    dispatch: (arg0: { payload: PhotoObj; type: string }) => void
+  ) => {
+    try {
+      await deleteFromFireStore(photo);
+    } catch (error) {}
   };
 };

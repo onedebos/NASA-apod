@@ -7,7 +7,8 @@ import {
   setSelectedDate,
   saveToStorage,
   getFavorites,
-  // getPhotosFromDb,
+  getPreviews,
+  saveToDb,
 } from "../features/photo/PhotoSlice";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -17,22 +18,25 @@ import Favorites from "./Favorites";
 import Loading from "./Loading";
 import PhotoStory from "../components/PhotoStory";
 import DirectionalButton from "../components/DirectionalButton";
+import { Link } from "react-router-dom";
 
 const Photo: React.FC = () => {
-  const {
-    photo,
-    loading,
-    errors,
-    selectedDate,
-    favorites,
-    // prevDayPhoto,
-    // nextDayPhoto,
-  } = useSelector(photoSelector);
+  const { photo, loading, errors, selectedDate, favorites } = useSelector(
+    photoSelector
+  );
   const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const dispatch = useDispatch();
   const dateRef = useRef<any>(moment(selectedDate));
   const [isImg, setIsImg] = useState<boolean>(true);
+
+  const isDayUnavailable = (currDate: any) => {
+    if (moment(currDate).isAfter(moment())) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   const handleClose = () => {
     setIsImg(true);
@@ -41,7 +45,7 @@ const Photo: React.FC = () => {
       return;
     }
     const formattedDate = dateSelected.format("YYYY-MM-DD");
-    dispatch(getOtherDaysPhoto(formattedDate, "NONE", "NONE"));
+    dispatch(getOtherDaysPhoto(formattedDate));
     dateRef.current = selectedDate;
   };
 
@@ -53,45 +57,40 @@ const Photo: React.FC = () => {
 
   const handlePrevDate = () => {
     setIsImg(true);
-    let currDate: any = dateRef.current;
-    currDate = moment(currDate);
-    let prevDate = currDate.subtract(2, "days");
-    let nextDate = currDate.add(2, "days");
-    currDate = currDate.subtract(1, "days");
+    let currDate = moment(dateRef.current)
+      .subtract(1, "days")
+      .format("YYYY-MM-DD");
 
-    // TODO extract to fn
+    // get Previous and Next dates for use in Previews
+    const dayBefore = moment(dateRef.current)
+      .subtract(2, "days")
+      .format("YYYY-MM-DD");
+    const dayAfter = moment(dayBefore).add(2, "days").format("YYYY-MM-DD");
 
-    currDate = currDate.format("YYYY-MM-DD");
-    prevDate = prevDate.format("YYYY-MM-DD");
-    nextDate = nextDate.format("YYYY-MM-DD");
+    dispatch(
+      getPreviews(dayBefore, isDayUnavailable(dayAfter) ? currDate : dayAfter)
+    );
 
-    if (moment(nextDate).isAfter(moment())) {
-      nextDate = "NONE";
-    }
-    dispatch(getOtherDaysPhoto(currDate, prevDate, nextDate));
-
+    //
+    dispatch(getOtherDaysPhoto(currDate));
     dateRef.current = currDate;
   };
 
   const handleNextDate = () => {
     setIsImg(true);
-    let currDate: any = dateRef.current;
-    let momentFormatted = moment(dateRef.current);
+    let currDate = moment(dateRef.current).add(1, "days").format("YYYY-MM-DD");
 
-    currDate = momentFormatted.add(1, "days").format("YYYY-MM-DD");
-    if (moment(currDate).isAfter(moment())) {
+    if (isDayUnavailable(currDate)) {
       setMessage("No new pictures to show!");
       setOpenSnackBar(true);
       setTimeout(() => setOpenSnackBar(false), 2000);
       return;
     }
     dateRef.current = currDate;
-    dispatch(getOtherDaysPhoto(currDate, "NONE", "NONE"));
+    dispatch(getOtherDaysPhoto(currDate));
   };
 
   const handleSaveFavoritesToStorage = () => {
-    // TODO if favorites increase show saved to favorites
-    // else show already saved
     setIsImg(true);
     setMessage("Saved to Favorites! Scroll down to see.");
     setOpenSnackBar(true);
@@ -105,7 +104,6 @@ const Photo: React.FC = () => {
   useEffect(() => {
     dispatch(getTodaysPhoto());
     dispatch(getFavorites());
-    // dispatch(getPhotosFromDb()); Shows all favorites in DB
     return () => {};
   }, [dispatch]);
 
@@ -194,6 +192,20 @@ const Photo: React.FC = () => {
           </div>
 
           <PhotoStory photo={photo} />
+          <div className="md:flex">
+            <button
+              className="shadow-md rounded-sm w-1/4 bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-full md:w-1/3 focus:outline-none mt-1 md:mt-0 mb-4"
+              onClick={() => dispatch(saveToDb(photo))}
+            >
+              Super Like!
+            </button>
+            <Link
+              to="/favorites"
+              className="shadow-md rounded-sm w-1/4 bg-gray-600 p-3 rounded-sm font-semibold transition ease-in-out w-full md:w-1/3 focus:outline-none mt-1 md:mt-0 mb-4 md:ml-2 text-white"
+            >
+              See Favs!
+            </Link>
+          </div>
         </div>
         <DirectionalButton
           direction="Next Day"

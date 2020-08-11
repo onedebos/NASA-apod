@@ -1,16 +1,11 @@
 import React from "react";
+import { PhotoObj } from "../common/types";
 
-interface iPhoto {
-  title: string;
-  copyright: string;
-  date: string;
-  explanation: string;
-}
-interface iPhotoStoryProps {
-  photo: iPhoto;
+interface PhotoStoryProps {
+  photo: PhotoObj;
 }
 
-const PhotoStory: React.FC<iPhotoStoryProps> = ({ photo }) => {
+const PhotoStory: React.FC<PhotoStoryProps> = ({ photo }) => {
   return (
     <section className="mt-3 py-2">
       <h1 className="font-bold text-3xl">{photo.title}</h1>

@@ -1,12 +1,12 @@
 import React from "react";
 
-interface IButtonsProp {
+interface ButtonsProp {
   direction: string;
   handleDirection: () => void;
   hiddenOnMobile: boolean;
 }
 
-const DirectionalButton: React.FC<IButtonsProp> = ({
+const DirectionalButton: React.FC<ButtonsProp> = ({
   direction,
   handleDirection,
   hiddenOnMobile,

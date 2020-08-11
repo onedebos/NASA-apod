@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import ScrollIntoView from "react-scroll-into-view";
-import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import { Snackbar } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import {
@@ -9,31 +7,16 @@ import {
   seeMoreAboutFavPhoto,
 } from "../features/photo/PhotoSlice";
 import NoFavPhotos from "../components/NoFavPhotos";
+import { v4 as uuidv4 } from "uuid";
+import Favorite from "./Favorite";
+import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
+import { PhotoObj } from "../common/types";
 
-interface IFavoriteProps {
-  date: string;
-  copyright: string;
-  hd_url: string;
-  media_type: string;
-  service_version: string;
-  title: string;
-  url: string;
-  explanation: string;
+interface FavProps {
+  favoritePhotos: Array<PhotoObj>;
 }
 
-interface IFavProps {
-  favoritePhotos: Array<PhotoType>;
-}
-
-interface PhotoType {
-  photo: IFavoriteProps;
-  url: string;
-  title: string;
-  date: string;
-  explanation: string;
-}
-
-const Favorites: React.FC<IFavProps> = ({ favoritePhotos }) => {
+const Favorites: React.FC<FavProps> = ({ favoritePhotos }) => {
   const [openSnackBar, setOpenSnackBar] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const dispatch = useDispatch();
@@ -68,43 +51,16 @@ const Favorites: React.FC<IFavProps> = ({ favoritePhotos }) => {
       </button>
 
       <div className="md:grid grid-cols-2 lg:grid-cols-3 gap-6 mt-3 lg:max-w-3xl">
-        {favoritePhotos.map((photo: PhotoType, index: number) => {
+        {favoritePhotos.map((photo: PhotoObj) => {
           return (
-            <div className="col-span-1 mt-5 md:mt-0" key={`id-${index}`}>
-              <img
-                src={photo.url}
-                alt={photo.explanation}
-                onError={(e: any) => {
-                  e.target.alt = "This is a video. Click See more to watch.";
-                }}
-                style={{
-                  height: "300px",
-                  width: "300px",
-                  borderRadius: "10px",
-                }}
+            <div className="col-span-1 mt-5 md:mt-0" key={uuidv4()}>
+              <Favorite
+                photo={photo}
+                handleDeletePicture={() =>
+                  handleDeletePictureFromStorage(photo.date)
+                }
+                seeMoreAboutPhoto={() => dispatch(seeMoreAboutFavPhoto(photo))}
               />
-
-              <div className="flex justify-start mt-2 pr-3 md:pr-0">
-                <div className="bg-gray-500 p-2 text-white rounded-md hover:bg-gray-700 w-full text-center">
-                  <ScrollIntoView selector="#see-more">
-                    <button
-                      className="focus:outline-none font-bold"
-                      onClick={() => {
-                        dispatch(seeMoreAboutFavPhoto(photo));
-                      }}
-                    >
-                      See more
-                    </button>
-                  </ScrollIntoView>
-                </div>
-                <button
-                  className="bg-red-500 p-2 text-white rounded-md font-bold ml-4 hover:bg-red-700 w-full focus:outline-none"
-                  onClick={() => handleDeletePictureFromStorage(photo.date)}
-                >
-                  Delete
-                  <DeleteRoundedIcon style={{ color: "white" }} />
-                </button>
-              </div>
             </div>
           );
         })}
