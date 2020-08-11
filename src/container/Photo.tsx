@@ -10,15 +10,13 @@ import {
   getPreviews,
   saveToDb,
 } from "../features/photo/PhotoSlice";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+
 import moment from "moment";
 import { Snackbar } from "@material-ui/core";
 import Favorites from "./Favorites";
 import Loading from "./Loading";
 import PhotoStory from "../components/PhotoStory";
 import DirectionalButton from "../components/DirectionalButton";
-import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
 const Photo: React.FC = () => {
@@ -37,6 +35,10 @@ const Photo: React.FC = () => {
     } else {
       return false;
     }
+  };
+
+  const handleChange = (date: any) => {
+    dispatch(setSelectedDate(date.toISOString()));
   };
 
   const handleClose = () => {
@@ -115,7 +117,7 @@ const Photo: React.FC = () => {
   }, [dispatch]);
 
   if (loading || errors) {
-    return <Loading />;
+    return <Loading message="Hold tight! Connecting to NASA....." />;
   }
 
   return (
@@ -127,92 +129,20 @@ const Photo: React.FC = () => {
           hiddenOnMobile={true}
         />
         <div className="flex flex-col justify-center m-auto min-w-full min-h-screen col-span-2">
-          <div style={{ maxHeight: "50vh" }} className="mb-1">
-            {isImg ? (
-              <img
-                src={photo.url}
-                alt={photo.explanation}
-                onError={handleImgNotLoading}
-                style={{
-                  maxHeight: "50vh",
-                  minHeight: "50vh",
-                  margin: "1.5em auto",
-                }}
-              />
-            ) : (
-              <iframe
-                className="w-full"
-                style={{
-                  maxHeight: "50vh",
-                  minHeight: "50vh",
-                  maxWidth: "100vw",
-                  margin: "0.5em auto",
-                }}
-                src={photo.url}
-                title={photo.title}
-              />
-            )}
-          </div>
-
-          <div className="flex md:justify-between flex-col md:flex-row mt-1">
-            <DirectionalButton
-              direction="Previous Day"
-              handleDirection={handlePrevDate}
-              hiddenOnMobile={false}
-            />
-            <DirectionalButton
-              direction="Next Day"
-              handleDirection={handleNextDate}
-              hiddenOnMobile={false}
-            />
-
-            <button
-              className="bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-full md:w-1/3 save-to-storage focus:outline-none mt-1 md:mt-0"
-              onClick={handleSaveFavoritesToStorage}
-              type="button"
-              disabled={errors ? true : false}
-            >
-              Favorite
-              <span>
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Love_Heart_symbol.svg"
-                  alt="favorite"
-                  className="ml-3"
-                  style={{
-                    height: "20px",
-                    width: "20px",
-                    display: "inline-block",
-                  }}
-                />
-              </span>
-            </button>
-            <DatePicker
-              dateFormat="yyyy/MM/dd"
-              maxDate={disableDates(new Date(), 0)}
-              selected={new Date(selectedDate)}
-              onChange={(date: any) =>
-                dispatch(setSelectedDate(date.toISOString()))
-              }
-              onCalendarClose={handleClose}
-              className="text-right p-3 mt-2 md:mt-0 rounded-sm font-semibold border border-orange-800 w-full"
-            />
-          </div>
-
-          <PhotoStory photo={photo} />
-          <div className="md:flex">
-            <button
-              className="shadow-md rounded-sm w-1/4 bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-full md:w-1/3 focus:outline-none mt-1 md:mt-0 mb-4"
-              onClick={handleSaveToDb}
-            >
-              Super Like!
-            </button>
-            <Link
-              to="/favorites"
-              className="shadow-md rounded-sm w-1/4 bg-gray-600 p-3 rounded-sm font-semibold transition ease-in-out w-full md:w-1/3 focus:outline-none mt-1 md:mt-0 mb-4 md:ml-2 text-white"
-            >
-              See Favs!
-            </Link>
-          </div>
+          <PhotoStory
+            isImg={isImg}
+            handleImgNotLoading={handleImgNotLoading}
+            photo={photo}
+            handleSaveToDb={handleSaveToDb}
+            handlePrevDate={handlePrevDate}
+            handleNextDate={handleNextDate}
+            handleClose={handleClose}
+            handleSaveFavoritesToStorage={handleSaveFavoritesToStorage}
+            errors={errors}
+            disableDates={disableDates(new Date(), 0)}
+            selectedDate={selectedDate}
+            handleChange={(date: any) => handleChange(date)}
+          />
         </div>
         <DirectionalButton
           direction="Next Day"

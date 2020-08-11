@@ -8,7 +8,7 @@ import {
 } from "../features/photo/PhotoSlice";
 import NoFavPhotos from "../components/NoFavPhotos";
 import { v4 as uuidv4 } from "uuid";
-import Favorite from "./Favorite";
+import Favorite from "../components/Favorite";
 import DeleteRoundedIcon from "@material-ui/icons/DeleteRounded";
 import { PhotoObj } from "../common/types";
 

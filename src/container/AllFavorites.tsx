@@ -6,7 +6,7 @@ import {
   seeMoreAboutFavPhoto,
   deleteFromDb,
 } from "../features/photo/PhotoSlice";
-import Favorite from "./Favorite";
+import Favorite from "../components/Favorite";
 import Loading from "./Loading";
 import { Link } from "react-router-dom";
 
@@ -23,7 +23,7 @@ const AllFavorites = () => {
   };
 
   if (loading) {
-    return <Loading />;
+    return <Loading message="Hold on a sec!..." />;
   }
 
   return (

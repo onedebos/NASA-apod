@@ -3,7 +3,11 @@ import logo from "../assets/images/logo.png";
 import { useSelector } from "react-redux";
 import { photoSelector } from "../features/photo/PhotoSlice";
 
-const Loading = () => {
+interface LoadingMessage {
+  message: string;
+}
+
+const Loading: React.FC<LoadingMessage> = ({ message }) => {
   const { errors } = useSelector(photoSelector);
   return (
     <div className="min-h-screen flex m-auto justify-center items-center bg-gray-100">
@@ -14,11 +18,7 @@ const Loading = () => {
           style={{ height: "300px", width: "350px" }}
         />
         <div className="font-bold text-center text-xl my-4 text-blue-700">
-          {errors ? (
-            <h1 className="text-red-600"> {errors}</h1>
-          ) : (
-            "Connecting to NASA ..."
-          )}
+          {errors ? <h1 className="text-red-600"> {errors}</h1> : message}
         </div>
       </div>
     </div>

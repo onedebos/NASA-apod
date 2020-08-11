@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { photoSelector } from "../features/photo/PhotoSlice";
 import Photo from "./Photo";
 import Footer from "../components/Footer";
-import AllFavorites from "../container/AllFavorites";
+import AllFavorites from "./AllFavorites";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 const App: React.FC = () => {
