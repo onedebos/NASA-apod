@@ -19,9 +19,3 @@ export const getFromFireStore = async () => {
 export const sendToFireStore = async (photo: PhotoObj) => {
   return db.collection("photos").doc().set(photo);
 };
-
-export const deleteFromFireStore = async (photo: string) => {
-  const findPicture = db.collection("photos").where("url", "==", photo);
-
-  console.log(findPicture, "s");
-};

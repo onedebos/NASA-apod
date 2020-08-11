@@ -4,7 +4,6 @@ import {
   getPhotosFromDb,
   photoSelector,
   seeMoreAboutFavPhoto,
-  deleteFromDb,
 } from "../features/photo/PhotoSlice";
 import { PhotoObj } from "../common/types";
 import Favorite from "./Favorite";
@@ -21,7 +20,6 @@ const AllFavorites = () => {
   }, [dispatch]);
 
   const handleDeletePicture = (url: string) => {
-    deleteFromDb(url);
     console.log("will delete picture from db.");
   };
 

@@ -278,14 +278,3 @@ export const getPhotosFromDb = () => {
     }
   };
 };
-
-// Delete Photos from DB
-export const deleteFromDb = (photo: string) => {
-  return async (
-    dispatch: (arg0: { payload: PhotoObj; type: string }) => void
-  ) => {
-    try {
-      await deleteFromFireStore(photo);
-    } catch (error) {}
-  };
-};
