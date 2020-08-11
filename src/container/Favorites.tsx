@@ -70,7 +70,7 @@ const Favorites: React.FC<IFavProps> = ({ favoritePhotos }) => {
       <div className="md:grid grid-cols-2 lg:grid-cols-3 gap-6 mt-3 lg:max-w-3xl">
         {favoritePhotos.map((photo: PhotoType, index: number) => {
           return (
-            <div className="col-span-1 mt-5 md:mt-0" key={index}>
+            <div className="col-span-1 mt-5 md:mt-0" key={`id-${index}`}>
               <img
                 src={photo.url}
                 alt={photo.explanation}
