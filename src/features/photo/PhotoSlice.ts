@@ -19,6 +19,7 @@ export const initialState: PhotoState = {
     service_version: "",
     title: "",
     url: "",
+    id: "",
   },
   errors: "",
   description: "",
@@ -176,8 +177,7 @@ export const getPreviews = (dayBefore: any, dayAfter: any) => {
     //   try {
     //     const previewDayBefore = await getPictureData(dayBefore);
     //     const previewDayAfter = await getPictureData(dayAfter);
-
-    console.log(dayBefore, dayAfter);
+    // console.log(dayBefore, dayAfter);
   };
 };
 
@@ -264,17 +264,41 @@ export const getPhotosFromDb = () => {
   ) => {
     dispatch(setLoading(true));
     try {
-      let arr: Array<object> = [];
-      const photosInDatabase = await getFromFireStore();
+      const res = await fetchLatestPhotosFromDb();
       dispatch(setLoading(false));
-      photosInDatabase.forEach((doc) => {
-        arr.push(doc.data());
-      });
-
-      dispatch(setPhotosFromDb(arr));
+      dispatch(setPhotosFromDb(res));
     } catch (error) {
       console.log("error");
       dispatch(setLoading(false));
     }
   };
+};
+
+// DELETE photos from DB
+export const deleteFromDb = (id: string) => {
+  return async (
+    dispatch: (arg0: { payload: PhotoObj; type: string }) => void
+  ) => {
+    dispatch(setLoading(true));
+    try {
+      await deleteFromFireStore(id);
+
+      const res = await fetchLatestPhotosFromDb();
+      dispatch(setPhotosFromDb(res));
+      dispatch(setLoading(false));
+    } catch (error) {
+      console.log("error");
+      dispatch(setLoading(false));
+    }
+  };
+};
+
+const fetchLatestPhotosFromDb = async () => {
+  let arr: Array<object> = [];
+  const photosInDatabase = await getFromFireStore();
+  photosInDatabase.forEach((doc) => {
+    arr.push(doc.data());
+  });
+
+  return arr;
 };

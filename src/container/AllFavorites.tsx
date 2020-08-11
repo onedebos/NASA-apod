@@ -4,8 +4,8 @@ import {
   getPhotosFromDb,
   photoSelector,
   seeMoreAboutFavPhoto,
+  deleteFromDb,
 } from "../features/photo/PhotoSlice";
-import { PhotoObj } from "../common/types";
 import Favorite from "./Favorite";
 import { v4 as uuidv4 } from "uuid";
 import Loading from "./Loading";
@@ -19,8 +19,8 @@ const AllFavorites = () => {
     dispatch(getPhotosFromDb());
   }, [dispatch]);
 
-  const handleDeletePicture = (url: string) => {
-    console.log("will delete picture from db.");
+  const handleDeletePicture = (id: string) => {
+    dispatch(deleteFromDb(id));
   };
 
   if (loading) {
@@ -35,12 +35,13 @@ const AllFavorites = () => {
 
       <div className="flex flex-wrap justify-center py-6">
         <div className="min-h-screen md:grid md:grid-cols-2 lg:grid-cols-4 gap-3">
-          {photosInDb.map((photo: PhotoObj) => {
+          {photosInDb.map((potd: any) => {
+            const { photo, id } = potd;
             return (
               <div className="col-span-1 mt-5 md:mt-0" key={uuidv4()}>
                 <Favorite
                   photo={photo}
-                  handleDeletePicture={() => handleDeletePicture(photo.url)}
+                  handleDeletePicture={() => handleDeletePicture(id)}
                   seeMoreAboutPhoto={() =>
                     dispatch(seeMoreAboutFavPhoto(photo))
                   }

@@ -17,5 +17,9 @@ export const getFromFireStore = async () => {
 };
 
 export const sendToFireStore = async (photo: PhotoObj) => {
-  return db.collection("photos").doc().set(photo);
+  return db.collection("photos").doc(photo.id).set(photo);
+};
+
+export const deleteFromFireStore = async (id: string) => {
+  return db.collection("photos").doc(id).delete();
 };

@@ -7,6 +7,7 @@ export interface PhotoObj {
   service_version: string;
   title: string;
   url: string;
+  id?: string;
 }
 
 export interface PhotoState {
@@ -18,4 +19,5 @@ export interface PhotoState {
   selectedDate: string;
   favorites: Array<PhotoObj>;
   photosInDb: Array<PhotoObj>;
+  id?: string;
 }
