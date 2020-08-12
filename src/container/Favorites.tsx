@@ -40,7 +40,7 @@ const Favorites: React.FC<FavProps> = ({ favoritePhotos }) => {
   }
   return (
     <section className="md:max-w-lg lg:max-w-4xl m-auto px-6 pb-6">
-      <h1 className="font-bold text-5xl">Favorites!</h1>
+      <h1 className="font-bold text-2xl md:text-5xl">Your Favorites!</h1>
 
       <button
         className="bg-red-500 p-2 rounded-sm text-white font-bold mb-4 hover:bg-red-700 focus:outline-none clear-all"
