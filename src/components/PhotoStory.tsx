@@ -64,12 +64,12 @@ const PhotoStory: React.FC<PhotoStoryProps> = ({
       </div>
       <div className="flex md:justify-between flex-col md:flex-row mt-1">
         <DirectionalButton
-          direction="Previous Day"
+          direction="Previous"
           handleDirection={handlePrevDate}
           hiddenOnMobile={false}
         />
         <DirectionalButton
-          direction="Next Day"
+          direction="Next"
           handleDirection={handleNextDate}
           hiddenOnMobile={false}
         />

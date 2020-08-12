@@ -124,7 +124,7 @@ const Photo: React.FC = () => {
     <div>
       <div className="px-8 md:p-0 md:grid grid-cols-4" id="see-more">
         <DirectionalButton
-          direction="Previous Day"
+          direction="Previous"
           handleDirection={handlePrevDate}
           hiddenOnMobile={true}
         />
@@ -145,7 +145,7 @@ const Photo: React.FC = () => {
           />
         </div>
         <DirectionalButton
-          direction="Next Day"
+          direction="Next"
           handleDirection={handleNextDate}
           hiddenOnMobile={true}
         />
