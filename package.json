@@ -30,7 +30,7 @@
     "typescript": "~3.7.2"
   },
   "scripts": {
-    "start": "npm run build:css && react-scripts start",
+    "start": "NODE_ENV=production npm run build:css && react-scripts start",
     "build:css": "postcss src/assets/styles/tailwind.css -o src/assets/styles/index.css",
     "build": "NODE_ENV=production npm run build:css && react-scripts build",
     "test": "cypress run -- --spec cypress/integration/unit/local_storage.spec.js",

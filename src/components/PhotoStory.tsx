@@ -117,16 +117,17 @@ const PhotoStory: React.FC<PhotoStoryProps> = ({
         </div>
       </div>
       <p>{photo.explanation}</p>
-      <div className="md:flex justify-center">
+      <div className="flex flex-col md:flex-row text-center justify-center">
         <button
-          className="shadow-md rounded-sm w-1/4 bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-full md:w-1/3 focus:outline-none mt-1 md:mt-4 mb-4"
+          className="shadow-md rounded-sm w-1/4 bg-gray-300 p-3 rounded-sm font-semibold hover:bg-green-200 transition ease-in-out w-full md:w-1/3 focus:outline-none mt-4 mb-4"
           onClick={handleSaveToDb}
         >
           Super Like!
         </button>
+
         <Link
           to="/favorites"
-          className="shadow-md rounded-sm w-1/4 bg-gray-600 p-3 rounded-sm font-semibold transition ease-in-out w-full md:w-1/3 focus:outline-none mt-1 md:mt-4 mb-4 md:ml-2 text-white"
+          className="shadow-md rounded-sm bg-gray-600 p-3 rounded-sm font-semibold transition ease-in-out w-full md:w-1/3 focus:outline-none md:mt-4 mb-4 md:ml-2 text-white"
         >
           See Favs!
         </Link>
